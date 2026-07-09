@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0B0D14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F3F4F9" media="(prefers-color-scheme: light)">
+
+<title>Shelf — Personal Book Library</title>
+<meta name="description" content="Shelf is a personal book library: catalogue what you own, track reading progress, lend books to friends and keep a stamped borrowing history. Works offline, stores everything on your device.">
+<meta name="author" content="Shelf">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://example.com/shelf/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shelf">
+<meta property="og:title" content="Shelf — Personal Book Library">
+<meta property="og:description" content="Catalogue your books, track reading progress, lend to friends and keep a stamped borrowing history.">
+<meta property="og:url" content="https://example.com/shelf/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shelf — Personal Book Library">
+<meta name="twitter:description" content="Catalogue your books, track reading progress and keep a stamped borrowing history.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230B0D14'/><rect x='8' y='7' width='4' height='18' rx='1' fill='%238B8AFF'/><rect x='14' y='7' width='4' height='18' rx='1' fill='%23E0B27A'/><rect x='20' y='7' width='4' height='18' rx='1' fill='%234FB6A5'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400..700&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Shelf",
+  "applicationCategory": "Productivity",
+  "operatingSystem": "Any (web browser)",
+  "description": "A personal book library for cataloguing books, tracking reading progress and recording borrowing history.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to library</a>
+
+<!-- ─────────────────────────  ICON SPRITE  ───────────────────────── -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" class="sprite">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-books" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.7l3.4.9-3.8 14.4-3.4-.9z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M21 3l-8 8M15 3h6v6"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M3 3v6h6"/><path d="M3.5 13a9 9 0 1 0 2.6-7.1L3 9"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.9"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.4 3.6a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-rows" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21v-1.5a4.5 4.5 0 0 0-4.5-4.5h-7A4.5 4.5 0 0 0 4 19.5V21"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2h.01"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10.5l5 5 5-5M4 20h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 7.5l5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-keys" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ─────────────────────────  SIDEBAR  ───────────────────────── -->
+  <header class="rail glass" id="rail">
+    <a class="brand" href="#main">
+      <span class="brand__spines" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand__text">
+        <strong>Shelf</strong>
+        <small>Personal library</small>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Library sections">
+      <ul role="list">
+        <li><button class="nav__item is-active" data-view="library" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-books"/></svg><span>Library</span><span class="nav__count" data-count="library">0</span></button></li>
+        <li><button class="nav__item" data-view="favorites"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span>Favorites</span><span class="nav__count" data-count="favorites">0</span></button></li>
+        <li><button class="nav__item" data-view="borrowed"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg><span>On loan</span><span class="nav__count" data-count="borrowed">0</span></button></li>
+        <li><button class="nav__item" data-view="history"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span>History</span><span class="nav__count" data-count="history">0</span></button></li>
+        <li><button class="nav__item" data-view="stats"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg><span>Statistics</span></button></li>
+      </ul>
+    </nav>
+
+    <div class="rail__foot">
+      <button class="btn btn--ghost btn--full" id="exportBtn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export library</span></button>
+      <button class="btn btn--ghost btn--full" id="importBtn"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span>Import file</span></button>
+      <input type="file" id="importInput" accept="application/json,.json" hidden>
+      <button class="btn btn--ghost btn--full" id="shortcutsBtn"><svg class="icon" aria-hidden="true"><use href="#i-keys"/></svg><span>Shortcuts</span><kbd>?</kbd></button>
+    </div>
+  </header>
+
+  <!-- ─────────────────────────  MAIN  ───────────────────────── -->
+  <main id="main" class="main">
+
+    <div class="topbar glass">
+      <button class="icon-btn rail-toggle" id="railToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="rail">
+        <svg class="icon" aria-hidden="true"><use href="#i-rows"/></svg>
+      </button>
+
+      <form class="search" role="search" id="searchForm">
+        <label class="sr-only" for="searchInput">Search your library</label>
+        <svg class="icon search__icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="searchInput" type="search" placeholder="Search by title, author, category or ISBN" autocomplete="off" spellcheck="false" enterkeyhint="search">
+        <kbd class="search__kbd" aria-hidden="true">/</kbd>
+        <button type="button" class="search__clear" id="searchClear" aria-label="Clear search" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+        </button>
+      </form>
+
+      <div class="topbar__actions">
+        <button class="icon-btn" id="themeBtn" aria-label="Switch to light theme">
+          <svg class="icon icon--sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <svg class="icon icon--moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        </button>
+        <button class="btn btn--primary" id="addBtn">
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add book</span><kbd>N</kbd>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll" id="scroll">
+      <div class="wrap">
+
+        <!-- Page heading -->
+        <div class="page-head">
+          <p class="eyebrow" id="viewEyebrow">Dashboard</p>
+          <h1 class="display" id="viewTitle">Your library</h1>
+          <p class="lede" id="viewLede">Everything you own, on loan, or halfway through.</p>
+        </div>
+
+        <!-- Dashboard cards -->
+        <section class="stats" aria-label="Library overview">
+          <article class="stat glass" style="--tint:var(--violet)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-books"/></svg></span>
+            <p class="stat__num" data-stat="total">0</p>
+            <h2 class="stat__label">Total books</h2>
+            <p class="stat__meta" data-stat="totalMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--brass)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></span>
+            <p class="stat__num" data-stat="borrowed">0</p>
+            <h2 class="stat__label">Borrowed</h2>
+            <p class="stat__meta" data-stat="borrowedMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--jade)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span>
+            <p class="stat__num" data-stat="available">0</p>
+            <h2 class="stat__label">On the shelf</h2>
+            <p class="stat__meta" data-stat="availableMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--rose)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span>
+            <p class="stat__num" data-stat="categories">0</p>
+            <h2 class="stat__label">Categories</h2>
+            <p class="stat__meta" data-stat="categoriesMeta">—</p>
+          </article>
+        </section>
+
+        <!-- Recently added rail -->
+        <section class="recent" id="recent" aria-labelledby="recentTitle">
+          <div class="section-head">
+            <h2 id="recentTitle">Recently added</h2>
+            <p class="section-head__meta">The last five books to arrive</p>
+          </div>
+          <ul class="recent__list" id="recentList" role="list"></ul>
+        </section>
+
+        <!-- ── Collection view ── -->
+        <section class="collection" id="collectionView" aria-labelledby="collectionTitle">
+          <div class="section-head">
+            <h2 id="collectionTitle" class="sr-only">Books</h2>
+          </div>
+
+          <div class="toolbar">
+            <div class="chips" role="group" aria-label="Filter by category" id="chips"></div>
+
+            <div class="toolbar__right">
+              <div class="field field--inline">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter">
+                  <option value="all">All</option>
+                  <option value="available">On the shelf</option>
+                  <option value="borrowed">On loan</option>
+                  <option value="reading">Currently reading</option>
+                  <option value="finished">Finished</option>
+                  <option value="unread">Not started</option>
+                </select>
+              </div>
+
+              <div class="field field--inline">
+                <label for="sortSelect">Sort</label>
+                <select id="sortSelect">
+                  <option value="added-desc">Newest first</option>
+                  <option value="added-asc">Oldest first</option>
+                  <option value="title-asc">Title A–Z</option>
+                  <option value="title-desc">Title Z–A</option>
+                  <option value="author-asc">Author A–Z</option>
+                  <option value="year-desc">Year published</option>
+                  <option value="rating-desc">Highest rated</option>
+                  <option value="progress-desc">Most progress</option>
+                </select>
+              </div>
+
+              <div class="seg" role="group" aria-label="Layout">
+                <button class="seg__btn is-active" id="gridBtn" aria-pressed="true" aria-label="Grid layout"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></button>
+                <button class="seg__btn" id="listBtn" aria-pressed="false" aria-label="List layout"><svg class="icon" aria-hidden="true"><use href="#i-rows"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <p class="result-line" id="resultLine" role="status" aria-live="polite"></p>
+
+          <ul class="grid" id="grid" role="list"></ul>
+
+          <div class="empty" id="empty" hidden>
+            <span class="empty__mark" aria-hidden="true"><svg class="icon"><use href="#i-book"/></svg></span>
+            <h3 id="emptyTitle">No books here yet</h3>
+            <p id="emptyText">Add your first book and it will show up on this shelf.</p>
+            <button class="btn btn--primary" data-action="add-first"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add a book</span></button>
+          </div>
+        </section>
+
+        <!-- ── History view ── -->
+        <section class="history" id="historyView" hidden aria-labelledby="historyTitle">
+          <div class="section-head">
+            <h2 id="historyTitle">Borrowing history</h2>
+            <p class="section-head__meta">Every loan and return, newest first</p>
+          </div>
+
+          <div class="toolbar toolbar--slim">
+            <div class="field field--inline">
+              <label for="historyFilter">Show</label>
+              <select id="historyFilter">
+                <option value="all">All activity</option>
+                <option value="borrow">Loans only</option>
+                <option value="return">Returns only</option>
+              </select>
+            </div>
+            <button class="btn btn--ghost" id="clearHistoryBtn"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>Clear history</span></button>
+          </div>
+
+          <ol class="ledger" id="ledger" role="list"></ol>
+
+          <div class="empty" id="historyEmpty" hidden>
+            <span class="empty__mark" aria-hidden="true"><svg class="icon"><use href="#i-clock"/></svg></span>
+            <h3>Nothing has been lent yet</h3>
+            <p>When you lend a book, the loan and its return will be stamped here.</p>
+          </div>
+        </section>
+
+        <!-- ── Statistics view ── -->
+        <section class="statsview" id="statsView" hidden aria-labelledby="statsTitle">
+          <div class="section-head">
+            <h2 id="statsTitle">Statistics</h2>
+            <p class="section-head__meta">How the collection breaks down</p>
+          </div>
+
+          <div class="panels">
+            <article class="panel glass">
+              <h3>Books per category</h3>
+              <ul class="bars" id="catBars" role="list"></ul>
+            </article>
+
+            <article class="panel glass">
+              <h3>Reading progress</h3>
+              <div class="donut-row">
+                <div class="donut" id="donut" role="img" aria-labelledby="donutDesc">
+                  <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="donut__track" cx="60" cy="60" r="52"/>
+                    <circle class="donut__seg donut__seg--done" cx="60" cy="60" r="52"/>
+                    <circle class="donut__seg donut__seg--reading" cx="60" cy="60" r="52"/>
+                  </svg>
+                  <p class="donut__center"><strong data-stat="finishedPct">0%</strong><span>finished</span></p>
+                </div>
+                <ul class="legend" id="legend" role="list">
+                  <li><span class="dot" style="--tint:var(--jade)"></span>Finished<b data-stat="finished">0</b></li>
+                  <li><span class="dot" style="--tint:var(--violet)"></span>In progress<b data-stat="reading">0</b></li>
+                  <li><span class="dot" style="--tint:var(--line-strong)"></span>Not started<b data-stat="unread">0</b></li>
+                </ul>
+              </div>
+              <p id="donutDesc" class="sr-only">Doughnut chart of finished, in-progress and unread books.</p>
+              <dl class="kv">
+                <div><dt>Pages read</dt><dd data-stat="pagesRead">0</dd></div>
+                <div><dt>Pages owned</dt><dd data-stat="pagesTotal">0</dd></div>
+                <div><dt>Average rating</dt><dd data-stat="avgRating">—</dd></div>
+              </dl>
+            </article>
+
+            <article class="panel glass">
+              <h3>Most shelved authors</h3>
+              <ol class="ranks" id="authorRanks" role="list"></ol>
+            </article>
+
+            <article class="panel glass">
+              <h3>Lending</h3>
+              <dl class="kv kv--lg">
+                <div><dt>Total loans</dt><dd data-stat="loans">0</dd></div>
+                <div><dt>Currently out</dt><dd data-stat="out">0</dd></div>
+                <div><dt>Overdue</dt><dd data-stat="overdue">0</dd></div>
+                <div><dt>Most trusted borrower</dt><dd data-stat="topBorrower">—</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ─────────────────────────  DETAILS DIALOG  ───────────────────────── -->
+<dialog class="modal modal--detail" id="detailModal" aria-labelledby="detailTitle">
+  <div class="modal__inner glass" id="detailBody"></div>
+</dialog>
+
+<!-- ─────────────────────────  BOOK FORM DIALOG  ───────────────────────── -->
+<dialog class="modal" id="formModal" aria-labelledby="formTitle">
+  <form class="modal__inner glass" id="bookForm" novalidate>
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow" id="formEyebrow">Catalogue</p>
+        <h2 id="formTitle" class="display display--sm">Add a book</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+
+    <div class="modal__body form-grid">
+      <div class="field field--span">
+        <label for="f-title">Title <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-title" name="title" required maxlength="120" autocomplete="off" aria-describedby="e-title">
+        <p class="err" id="e-title" hidden>Give the book a title.</p>
+      </div>
+
+      <div class="field field--span">
+        <label for="f-author">Author <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-author" name="author" required maxlength="80" autocomplete="off" aria-describedby="e-author">
+        <p class="err" id="e-author" hidden>Who wrote it?</p>
+      </div>
+
+      <div class="field">
+        <label for="f-category">Category</label>
+        <input id="f-category" name="category" list="categoryList" maxlength="40" autocomplete="off" placeholder="Fiction">
+        <datalist id="categoryList"></datalist>
+      </div>
+
+      <div class="field">
+        <label for="f-year">Year published</label>
+        <input id="f-year" name="year" type="number" min="1" max="2100" inputmode="numeric" aria-describedby="e-year">
+        <p class="err" id="e-year" hidden>Use a year between 1 and 2100.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-pages">Pages</label>
+        <input id="f-pages" name="pages" type="number" min="1" max="20000" inputmode="numeric" aria-describedby="e-pages">
+        <p class="err" id="e-pages" hidden>Pages must be a positive number.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-isbn">ISBN</label>
+        <input id="f-isbn" name="isbn" maxlength="20" autocomplete="off" placeholder="978-…" class="mono">
+      </div>
+
+      <div class="field field--span">
+        <label for="f-desc">Description</label>
+        <textarea id="f-desc" name="description" rows="3" maxlength="600" placeholder="A sentence or two you'll thank yourself for later."></textarea>
+      </div>
+
+      <div class="field field--span">
+        <span class="label" id="ratingLabel">Rating</span>
+        <div class="rating" role="radiogroup" aria-labelledby="ratingLabel" id="ratingInput">
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="1" aria-label="1 star"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="2" aria-label="2 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="3" aria-label="3 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="4" aria-label="4 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="5" aria-label="5 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__clear" id="ratingClear">Clear</button>
+        </div>
+      </div>
+
+      <div class="field field--span">
+        <label for="f-progress">Reading progress — <output id="progressOut" for="f-progress">0%</output></label>
+        <input id="f-progress" name="progress" type="range" min="0" max="100" step="1" value="0">
+      </div>
+
+      <div class="field field--span">
+        <label class="check">
+          <input type="checkbox" id="f-fav" name="favorite">
+          <span class="check__box" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+          <span>Mark as a favorite</span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn--primary" id="formSubmit"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Save book</span></button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ─────────────────────────  BORROW DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="borrowModal" aria-labelledby="borrowTitle">
+  <form class="modal__inner glass" id="borrowForm" novalidate>
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">Lend</p>
+        <h2 id="borrowTitle" class="display display--sm">Lend this book</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+
+    <div class="modal__body">
+      <p class="modal__note" id="borrowBook"></p>
+
+      <div class="field">
+        <label for="f-borrower">Lent to <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-borrower" name="borrower" required maxlength="60" autocomplete="off" list="borrowerList" placeholder="Name of the borrower" aria-describedby="e-borrower">
+        <datalist id="borrowerList"></datalist>
+        <p class="err" id="e-borrower" hidden>Enter who is taking the book.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-due">Due back</label>
+        <input id="f-due" name="due" type="date" class="mono">
+      </div>
+    </div>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg><span>Lend book</span></button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ─────────────────────────  CONFIRM DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="confirmModal" aria-labelledby="confirmTitle">
+  <div class="modal__inner glass">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow" id="confirmEyebrow">Confirm</p>
+        <h2 id="confirmTitle" class="display display--sm">Are you sure?</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="modal__body"><p class="modal__note" id="confirmText"></p></div>
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Keep it</button>
+      <button type="button" class="btn btn--danger" id="confirmOk"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>Delete</span></button>
+    </footer>
+  </div>
+</dialog>
+
+<!-- ─────────────────────────  SHORTCUTS DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="keysModal" aria-labelledby="keysTitle">
+  <div class="modal__inner glass">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">Keyboard</p>
+        <h2 id="keysTitle" class="display display--sm">Shortcuts</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="modal__body">
+      <dl class="keys">
+        <div><dt><kbd>/</kbd></dt><dd>Focus search</dd></div>
+        <div><dt><kbd>N</kbd></dt><dd>Add a book</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>L</kbd></dt><dd>Go to library</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>F</kbd></dt><dd>Go to favorites</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>B</kbd></dt><dd>Go to books on loan</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>H</kbd></dt><dd>Go to history</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>S</kbd></dt><dd>Go to statistics</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Toggle theme</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Close dialog or clear search</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>Open this list</dd></div>
+      </dl>
+    </div>
+  </div>
+</dialog>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<template id="cardTpl">
+  <li class="card" role="listitem">
+    <div class="card__cover-wrap">
+      <button class="cover" data-act="open" type="button">
+        <span class="cover__spine" aria-hidden="true"></span>
+        <span class="cover__body">
+          <span class="cover__cat"></span>
+          <span class="cover__title"></span>
+          <span class="cover__rule" aria-hidden="true"></span>
+          <span class="cover__author"></span>
+        </span>
+        <span class="cover__seal" aria-hidden="true"></span>
+      </button>
+      <button class="fav" data-act="fav" type="button" aria-pressed="false">
+        <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>
+      </button>
+      <span class="ribbon" hidden></span>
+    </div>
+
+    <div class="card__body">
+      <h3 class="card__title"></h3>
+      <p class="card__author"></p>
+      <p class="card__stars" aria-hidden="true"></p>
+
+      <div class="progress">
+        <div class="progress__track"><div class="progress__fill"></div></div>
+        <span class="progress__label mono"></span>
+      </div>
+
+      <div class="card__foot">
+        <span class="pill"></span>
+        <div class="card__acts">
+          <button class="icon-btn icon-btn--sm" data-act="loan" type="button"></button>
+          <button class="icon-btn icon-btn--sm" data-act="edit" type="button" aria-label="Edit"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg></button>
+          <button class="icon-btn icon-btn--sm icon-btn--danger" data-act="del" type="button" aria-label="Delete"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </li>
+</template>
+
+<script src="script.js" defer></script>
+</body>
+</html>

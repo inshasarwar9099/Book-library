@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0B0D14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F3F4F9" media="(prefers-color-scheme: light)">
+
+<title>Shelf — Personal Book Library</title>
+<meta name="description" content="Shelf is a personal book library: catalogue what you own, track reading progress, lend books to friends and keep a stamped borrowing history. Works offline, stores everything on your device.">
+<meta name="author" content="Shelf">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://example.com/shelf/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Shelf">
+<meta property="og:title" content="Shelf — Personal Book Library">
+<meta property="og:description" content="Catalogue your books, track reading progress, lend to friends and keep a stamped borrowing history.">
+<meta property="og:url" content="https://example.com/shelf/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shelf — Personal Book Library">
+<meta name="twitter:description" content="Catalogue your books, track reading progress and keep a stamped borrowing history.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230B0D14'/><rect x='8' y='7' width='4' height='18' rx='1' fill='%238B8AFF'/><rect x='14' y='7' width='4' height='18' rx='1' fill='%23E0B27A'/><rect x='20' y='7' width='4' height='18' rx='1' fill='%234FB6A5'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400..700&display=swap">
+<style>
+/* ============================================================================
+   SHELF — Personal Book Library
+   style.css
+
+   0. Tokens & themes      5. Toolbar, chips, filters
+   1. Reset & base         6. Book cards & covers
+   2. App shell            7. Ledger (date-due slips)
+   3. Sidebar rail         8. Statistics panels
+   4. Topbar & search      9. Dialogs, forms, toasts
+                          10. Responsive & motion
+   ========================================================================= */
+
+/* ── 0. Tokens ───────────────────────────────────────────────────────────── */
+:root {
+  /* Brand hues — ink violet, brass, jade, rose. Deliberately not the usual
+     terracotta-on-cream. Shared across both themes. */
+  --violet: #8b8aff;
+  --brass:  #e0b27a;
+  --jade:   #4fb6a5;
+  --rose:   #e0708d;
+  --red:    #f2596b;
+
+  /* Spacing scale (4px base) */
+  --s1: .25rem; --s2: .5rem;  --s3: .75rem; --s4: 1rem;
+  --s5: 1.5rem; --s6: 2rem;   --s7: 3rem;   --s8: 4.5rem;
+
+  /* Radii */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-xl: 26px; --r-full: 999px;
+
+  /* Type */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-ui: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --step--1: clamp(.75rem, .72rem + .12vw, .8125rem);
+  --step-0:  clamp(.875rem, .85rem + .14vw, .9375rem);
+  --step-1:  clamp(1rem, .96rem + .2vw, 1.0625rem);
+  --step-2:  clamp(1.25rem, 1.16rem + .42vw, 1.5rem);
+  --step-3:  clamp(1.75rem, 1.5rem + 1.2vw, 2.6rem);
+
+  --rail-w: 262px;
+  --topbar-h: 72px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --dur: .28s;
+}
+
+/* Dark (default) */
+[data-theme="dark"] {
+  --bg: #0b0d14;
+  --bg-grad-1: color-mix(in oklab, var(--violet) 16%, transparent);
+  --bg-grad-2: color-mix(in oklab, var(--jade) 12%, transparent);
+  --surface: #12141f;
+  --glass-bg: rgb(255 255 255 / .045);
+  --glass-brd: rgb(255 255 255 / .09);
+  --glass-hi: rgb(255 255 255 / .16);
+  --text: #eef0f7;
+  --text-2: #a7adc2;
+  --text-3: #767d95;
+  --line: rgb(255 255 255 / .07);
+  --line-strong: rgb(255 255 255 / .18);
+  --accent: var(--violet);
+  --accent-ink: #0b0d14;
+  --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 12px 34px -12px rgb(0 0 0 / .7);
+  --shadow-lg: 0 40px 90px -30px rgb(0 0 0 / .85);
+  --cover-shade: .34;
+  --seal-op: .12;
+}
+
+/* Light */
+[data-theme="light"] {
+  --bg: #f3f4f9;
+  --bg-grad-1: color-mix(in oklab, var(--violet) 22%, transparent);
+  --bg-grad-2: color-mix(in oklab, var(--brass) 18%, transparent);
+  --surface: #ffffff;
+  --glass-bg: rgb(255 255 255 / .66);
+  --glass-brd: rgb(16 18 30 / .08);
+  --glass-hi: rgb(255 255 255 / .9);
+  --text: #14161f;
+  --text-2: #545a6b;
+  --text-3: #7d8395;
+  --line: rgb(16 18 30 / .08);
+  --line-strong: rgb(16 18 30 / .2);
+  --accent: #5b4fe0;
+  --accent-ink: #ffffff;
+  --shadow: 0 1px 2px rgb(16 18 30 / .06), 0 10px 30px -12px rgb(16 18 30 / .22);
+  --shadow-lg: 0 40px 80px -32px rgb(16 18 30 / .3);
+  --cover-shade: .1;
+  --seal-op: .2;
+}
+
+/* ── 1. Reset & base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  min-height: 100dvh;
+  font: 400 var(--step-0)/1.6 var(--font-ui);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden; /* the .scroll pane scrolls, not the page */
+}
+
+/* Ambient light — two soft washes, fixed, never repainted on scroll */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -30% -10% auto -10%;
+  height: 90vh;
+  background:
+    radial-gradient(52% 60% at 18% 0%, var(--bg-grad-1), transparent 70%),
+    radial-gradient(46% 55% at 88% 8%, var(--bg-grad-2), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+img, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+ul, ol { list-style: none; padding: 0; }
+h1, h2, h3 { line-height: 1.15; font-weight: 600; text-wrap: balance; }
+p { text-wrap: pretty; }
+
+[hidden] { display: none !important; }
+
+::selection { background: color-mix(in oklab, var(--accent) 40%, transparent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* Custom scrollbars, quiet by default */
+.scroll { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.scroll::-webkit-scrollbar { width: 10px; }
+.scroll::-webkit-scrollbar-thumb {
+  background: var(--line-strong); border-radius: var(--r-full);
+  border: 3px solid transparent; background-clip: content-box;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed; top: var(--s3); left: 50%; z-index: 100;
+  translate: -50% -160%;
+  padding: var(--s3) var(--s5); border-radius: var(--r-full);
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 600; text-decoration: none;
+  transition: translate var(--dur) var(--ease-out);
+}
+.skip-link:focus-visible { translate: -50% 0; }
+
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 90;
+  font-weight: 600;
+  font-size: var(--step-3);
+  letter-spacing: -.022em;
+  line-height: 1.05;
+}
+.display--sm { font-size: var(--step-2); font-variation-settings: "SOFT" 30, "WONK" 1, "opsz" 32; }
+
+.eyebrow {
+  font: 500 var(--step--1)/1 var(--font-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: var(--s3);
+}
+
+.lede { color: var(--text-2); max-width: 56ch; margin-top: var(--s3); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+kbd {
+  font: 500 .68rem/1 var(--font-mono);
+  padding: .3em .45em .25em;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  color: var(--text-3);
+  background: var(--glass-bg);
+}
+
+.icon {
+  width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.7;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-brd);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+/* ── 2. App shell ────────────────────────────────────────────────────────── */
+.app {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  height: 100dvh;
+}
+
+.main { display: flex; flex-direction: column; min-width: 0; }
+
+.scroll {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+.wrap {
+  width: min(1320px, 100%);
+  margin-inline: auto;
+  padding: var(--s6) var(--s6) var(--s8);
+}
+
+.page-head { margin-bottom: var(--s6); }
+
+.section-head { margin-bottom: var(--s4); }
+.section-head h2 { font-size: var(--step-1); letter-spacing: -.01em; }
+.section-head__meta { color: var(--text-3); font-size: var(--step--1); margin-top: 2px; }
+
+/* ── 3. Sidebar rail ─────────────────────────────────────────────────────── */
+.rail {
+  display: flex; flex-direction: column; gap: var(--s6);
+  padding: var(--s5) var(--s4);
+  border-width: 0 1px 0 0;
+  border-radius: 0;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+}
+
+.brand {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s2);
+  text-decoration: none; color: inherit;
+  border-radius: var(--r-md);
+}
+.brand__spines { display: flex; gap: 3px; padding: 5px 6px; border-radius: 7px; background: color-mix(in oklab, var(--text) 8%, transparent); }
+.brand__spines i { width: 4px; height: 22px; border-radius: 2px; display: block; }
+.brand__spines i:nth-child(1) { background: var(--violet); }
+.brand__spines i:nth-child(2) { background: var(--brass); height: 18px; align-self: end; }
+.brand__spines i:nth-child(3) { background: var(--jade); height: 20px; align-self: end; }
+.brand__text { display: grid; }
+.brand__text strong {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 24;
+  font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em;
+}
+.brand__text small { color: var(--text-3); font-size: .72rem; letter-spacing: .02em; }
+
+.nav { flex: 1; }
+.nav ul { display: grid; gap: 2px; }
+
+.nav__item {
+  position: relative;
+  display: flex; align-items: center; gap: var(--s3);
+  width: 100%; padding: var(--s3);
+  border-radius: var(--r-md);
+  color: var(--text-2); font-weight: 500;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.nav__item::before {
+  content: ""; position: absolute; left: 0; top: 50%;
+  width: 3px; height: 0; translate: 0 -50%;
+  border-radius: 0 3px 3px 0; background: var(--accent);
+  transition: height var(--dur) var(--ease-out);
+}
+.nav__item:hover { background: color-mix(in oklab, var(--text) 6%, transparent); color: var(--text); }
+.nav__item.is-active { color: var(--text); background: color-mix(in oklab, var(--accent) 12%, transparent); }
+.nav__item.is-active::before { height: 20px; }
+.nav__item.is-active .icon { color: var(--accent); }
+.nav__item span:not(.nav__count) { flex: 1; text-align: left; }
+
+.nav__count {
+  font: 500 .72rem/1 var(--font-mono);
+  padding: .32em .5em; border-radius: var(--r-full);
+  background: color-mix(in oklab, var(--text) 8%, transparent);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.nav__item.is-active .nav__count { background: color-mix(in oklab, var(--accent) 22%, transparent); color: var(--text); }
+
+.rail__foot { display: grid; gap: var(--s1); border-top: 1px solid var(--line); padding-top: var(--s4); }
+
+/* ── 4. Topbar & search ──────────────────────────────────────────────────── */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: var(--s4);
+  height: var(--topbar-h);
+  padding-inline: var(--s5);
+  border-width: 0 0 1px;
+  border-radius: 0;
+}
+
+.search {
+  position: relative; flex: 1; max-width: 560px;
+}
+.search__icon {
+  position: absolute; left: 14px; top: 50%; translate: 0 -50%;
+  color: var(--text-3); pointer-events: none;
+}
+.search input {
+  width: 100%; height: 44px;
+  padding: 0 82px 0 44px;
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-full);
+  background: color-mix(in oklab, var(--text) 5%, transparent);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.search input::placeholder { color: var(--text-3); }
+.search input::-webkit-search-cancel-button { display: none; }
+.search input:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 16%, transparent);
+}
+.search__kbd { position: absolute; right: 16px; top: 50%; translate: 0 -50%; }
+.search:focus-within .search__kbd { opacity: 0; }
+.search__clear {
+  position: absolute; right: 8px; top: 50%; translate: 0 -50%;
+  display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: var(--r-full);
+  color: var(--text-3);
+}
+.search__clear:hover { background: color-mix(in oklab, var(--text) 10%, transparent); color: var(--text); }
+
+.topbar__actions { display: flex; align-items: center; gap: var(--s2); margin-left: auto; }
+.rail-toggle { display: none; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
+  height: 42px; padding-inline: var(--s4);
+  border-radius: var(--r-full);
+  font-weight: 600; font-size: var(--step-0);
+  border: 1px solid transparent;
+  transition: transform .16s var(--ease), background var(--dur) var(--ease),
+              border-color var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.btn:active { transform: scale(.97); }
+.btn .icon { width: 18px; height: 18px; }
+.btn kbd { margin-left: var(--s1); }
+
+.btn--primary {
+  background: var(--accent); color: var(--accent-ink);
+  box-shadow: 0 6px 18px -6px color-mix(in oklab, var(--accent) 70%, transparent);
+}
+.btn--primary kbd { border-color: color-mix(in oklab, var(--accent-ink) 30%, transparent); color: color-mix(in oklab, var(--accent-ink) 70%, transparent); background: none; }
+.btn--primary:hover { background: color-mix(in oklab, var(--accent) 86%, var(--text)); }
+
+.btn--ghost { color: var(--text-2); border-color: transparent; }
+.btn--ghost:hover { background: color-mix(in oklab, var(--text) 7%, transparent); color: var(--text); }
+
+.btn--danger { background: color-mix(in oklab, var(--red) 16%, transparent); color: var(--red); border-color: color-mix(in oklab, var(--red) 34%, transparent); }
+.btn--danger:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+.btn--full { width: 100%; justify-content: flex-start; height: 38px; font-weight: 500; }
+.btn--full kbd { margin-left: auto; }
+
+.icon-btn {
+  display: grid; place-items: center;
+  width: 42px; height: 42px;
+  border-radius: var(--r-full);
+  color: var(--text-2);
+  border: 1px solid transparent;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform .16s var(--ease);
+}
+.icon-btn:hover { background: color-mix(in oklab, var(--text) 8%, transparent); color: var(--text); }
+.icon-btn:active { transform: scale(.94); }
+.icon-btn--sm { width: 34px; height: 34px; }
+.icon-btn--sm .icon { width: 17px; height: 17px; }
+.icon-btn--danger:hover { background: color-mix(in oklab, var(--red) 15%, transparent); color: var(--red); }
+
+/* Theme toggle crossfade */
+#themeBtn { position: relative; }
+#themeBtn .icon { position: absolute; transition: opacity var(--dur) var(--ease), rotate var(--dur) var(--ease-out), scale var(--dur) var(--ease-out); }
+[data-theme="dark"] #themeBtn .icon--sun { opacity: 1; rotate: 0deg; scale: 1; }
+[data-theme="dark"] #themeBtn .icon--moon { opacity: 0; rotate: -50deg; scale: .6; }
+[data-theme="light"] #themeBtn .icon--sun { opacity: 0; rotate: 50deg; scale: .6; }
+[data-theme="light"] #themeBtn .icon--moon { opacity: 1; rotate: 0deg; scale: 1; }
+
+/* ── 5. Dashboard cards ──────────────────────────────────────────────────── */
+.stats {
+  display: grid; gap: var(--s4);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  margin-bottom: var(--s7);
+}
+
+.stat {
+  position: relative; overflow: hidden;
+  padding: var(--s5);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  transition: transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease);
+}
+.stat::after {
+  content: ""; position: absolute; inset: -60% -20% auto auto;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--tint) 30%, transparent), transparent 68%);
+  pointer-events: none;
+}
+.stat:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--tint) 40%, var(--glass-brd)); }
+
+.stat__icon {
+  display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: var(--r-md);
+  margin-bottom: var(--s4);
+  color: var(--tint);
+  background: color-mix(in oklab, var(--tint) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--tint) 22%, transparent);
+}
+.stat__num {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 20, "WONK" 0, "opsz" 100;
+  font-size: clamp(2.2rem, 1.8rem + 1.6vw, 3.1rem);
+  font-weight: 600; line-height: 1; letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stat__label { font-size: var(--step-0); font-weight: 600; margin-top: var(--s2); }
+.stat__meta { font-size: var(--step--1); color: var(--text-3); margin-top: 2px; }
+
+/* ── 5b. Recently added rail ─────────────────────────────────────────────── */
+.recent { margin-bottom: var(--s7); }
+.recent__list {
+  display: grid; gap: var(--s3);
+  grid-auto-flow: column; grid-auto-columns: minmax(238px, 1fr);
+  overflow-x: auto; padding-bottom: var(--s2);
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.recent__list::-webkit-scrollbar { display: none; }
+
+.recent__item {
+  scroll-snap-align: start;
+  display: flex; gap: var(--s3); align-items: center;
+  width: 100%; padding: var(--s3);
+  border-radius: var(--r-md);
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+  text-align: left;
+  transition: transform var(--dur) var(--ease-out), border-color var(--dur) var(--ease);
+}
+.recent__item:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+.recent__chip {
+  width: 34px; height: 46px; flex: none; border-radius: 3px 5px 5px 3px;
+  background: linear-gradient(160deg, color-mix(in oklab, var(--spine) 90%, #fff 10%), var(--spine));
+  border-left: 4px solid color-mix(in oklab, var(--spine) 55%, #000);
+  box-shadow: var(--shadow);
+}
+.recent__meta { min-width: 0; }
+.recent__meta strong { display: block; font-size: var(--step-0); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recent__meta span { display: block; font-size: var(--step--1); color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── 6. Toolbar, chips ───────────────────────────────────────────────────── */
+.toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s4);
+  justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+.toolbar--slim { justify-content: space-between; }
+.toolbar__right { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.chip {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  height: 34px; padding-inline: var(--s3);
+  border-radius: var(--r-full);
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+  color: var(--text-2);
+  font-size: var(--step--1); font-weight: 500;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.chip::before {
+  content: ""; width: 7px; height: 7px; border-radius: 2px;
+  background: var(--spine, var(--text-3));
+}
+.chip:hover { color: var(--text); border-color: var(--line-strong); }
+.chip[aria-pressed="true"] {
+  color: var(--text);
+  border-color: color-mix(in oklab, var(--spine, var(--accent)) 60%, transparent);
+  background: color-mix(in oklab, var(--spine, var(--accent)) 14%, transparent);
+}
+.chip__n { font-family: var(--font-mono); font-size: .68rem; color: var(--text-3); }
+
+.field { display: grid; gap: var(--s2); min-width: 0; }
+.field label, .field .label { font-size: var(--step--1); font-weight: 500; color: var(--text-2); }
+.field--inline { grid-template-columns: auto auto; align-items: center; gap: var(--s2); }
+.field--span { grid-column: 1 / -1; }
+.req { color: var(--rose); }
+
+select, input[type="text"], input[type="search"], input[type="number"], input[type="date"], textarea, input:not([type]) {
+  width: 100%; min-height: 40px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--text) 4%, transparent);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
+select {
+  appearance: none; cursor: pointer; padding-right: 32px;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 16px) 52%, calc(100% - 11px) 52%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+select:focus, input:focus, textarea:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 15%, transparent);
+}
+input[aria-invalid="true"] { border-color: var(--red); }
+.err { font-size: var(--step--1); color: var(--red); }
+
+.seg {
+  display: flex; gap: 2px; padding: 3px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+}
+.seg__btn {
+  display: grid; place-items: center;
+  width: 34px; height: 32px; border-radius: var(--r-full);
+  color: var(--text-3);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.seg__btn .icon { width: 17px; height: 17px; }
+.seg__btn.is-active { background: color-mix(in oklab, var(--text) 10%, transparent); color: var(--text); }
+
+.result-line {
+  font-size: var(--step--1); color: var(--text-3);
+  margin-bottom: var(--s4);
+  font-variant-numeric: tabular-nums;
+}
+.result-line b { color: var(--text-2); font-weight: 600; }
+
+/* ── 7. Book grid & cards ────────────────────────────────────────────────── */
+.grid {
+  display: grid; gap: var(--s5);
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+
+.card {
+  display: flex; flex-direction: column; gap: var(--s3);
+  min-width: 0;
+  animation: rise .4s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 24ms);
+}
+@keyframes rise { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0; } }
+
+.card__cover-wrap { position: relative; }
+
+/* The cover: a generated book jacket. The spine is the signature element. */
+.cover {
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 4px 10px 10px 4px;
+  overflow: hidden;
+  background:
+    linear-gradient(150deg, color-mix(in oklab, var(--spine) 82%, #fff 18%), var(--spine) 58%, color-mix(in oklab, var(--spine) 70%, #000) 100%);
+  box-shadow: var(--shadow);
+  text-align: left;
+  transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out);
+  transform-origin: 8% 50%;
+}
+.cover::after { /* paper grain + inner shading */
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / .35) 0 6%, rgb(255 255 255 / .09) 9%, transparent 22%),
+    radial-gradient(120% 80% at 30% 0%, rgb(255 255 255 / .12), transparent 60%);
+  opacity: calc(.4 + var(--cover-shade));
+  pointer-events: none;
+}
+.card:hover .cover, .cover:focus-visible {
+  transform: rotateY(-9deg) translateZ(0) scale(1.015);
+  box-shadow: var(--shadow-lg);
+}
+
+.cover__spine {
+  position: absolute; inset: 0 auto 0 0; width: 13px;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--spine) 40%, #000), color-mix(in oklab, var(--spine) 72%, #000) 70%, transparent);
+}
+.cover__body {
+  position: absolute; inset: auto 14px 16px 26px;
+  display: grid; gap: 6px;
+  color: #fff;
+  text-shadow: 0 1px 12px rgb(0 0 0 / .35);
+}
+.cover__cat {
+  font: 500 .6rem/1 var(--font-mono);
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgb(255 255 255 / .72);
+}
+.cover__title {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 60, "WONK" 1, "opsz" 30;
+  font-size: 1.02rem; font-weight: 600; line-height: 1.16; letter-spacing: -.01em;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cover__rule { height: 1px; background: rgb(255 255 255 / .3); width: 28px; }
+.cover__author { font-size: .72rem; color: rgb(255 255 255 / .82); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Embossed publisher seal — quiet detail, top-right of the jacket */
+.cover__seal {
+  position: absolute; top: 14px; right: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / .5);
+  opacity: var(--seal-op);
+}
+.cover__seal::before {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%;
+  border: 1px dashed rgb(255 255 255 / .8);
+}
+
+.fav {
+  position: absolute; top: 10px; left: 10px;
+  display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: var(--r-full);
+  color: #fff;
+  background: rgb(0 0 0 / .3);
+  backdrop-filter: blur(6px);
+  opacity: 0; scale: .8;
+  transition: opacity var(--dur) var(--ease), scale var(--dur) var(--ease-out), background var(--dur) var(--ease);
+}
+.card:hover .fav, .fav:focus-visible, .fav[aria-pressed="true"] { opacity: 1; scale: 1; }
+.fav:hover { background: rgb(0 0 0 / .5); }
+.fav[aria-pressed="true"] { color: var(--rose); }
+.fav[aria-pressed="true"] .icon { fill: var(--rose); }
+
+.ribbon {
+  position: absolute; top: 14px; right: -5px;
+  padding: 4px 10px 4px 8px;
+  font: 500 .62rem/1.4 var(--font-mono);
+  letter-spacing: .06em; text-transform: uppercase;
+  color: #fff; background: var(--red);
+  border-radius: 3px 0 0 3px;
+  box-shadow: var(--shadow);
+}
+.ribbon[data-kind="loan"] { background: var(--brass); color: #22160a; }
+
+.card__body { display: grid; gap: var(--s2); }
+.card__title {
+  font-size: var(--step-0); font-weight: 600; letter-spacing: -.005em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card__title mark { background: color-mix(in oklab, var(--brass) 40%, transparent); color: inherit; border-radius: 3px; }
+.card__author { font-size: var(--step--1); color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card__author mark { background: color-mix(in oklab, var(--brass) 40%, transparent); color: inherit; border-radius: 3px; }
+.card__stars { font-size: .78rem; letter-spacing: .1em; color: var(--brass); height: 1em; }
+
+.progress { display: flex; align-items: center; gap: var(--s2); }
+.progress__track {
+  flex: 1; height: 4px; border-radius: var(--r-full);
+  background: color-mix(in oklab, var(--text) 12%, transparent);
+  overflow: hidden;
+}
+.progress__fill {
+  height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--jade));
+  transition: width .6s var(--ease-out);
+}
+.progress__label { font-size: .68rem; color: var(--text-3); min-width: 30px; text-align: right; }
+
+.card__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); }
+.card__acts { display: flex; gap: 1px; opacity: 0; transition: opacity var(--dur) var(--ease); }
+.card:hover .card__acts, .card:focus-within .card__acts { opacity: 1; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 .68rem/1 var(--font-mono);
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: .45em .6em; border-radius: var(--r-full);
+  border: 1px solid var(--line);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.pill[data-state="available"] { color: var(--jade); border-color: color-mix(in oklab, var(--jade) 30%, transparent); }
+.pill[data-state="borrowed"] { color: var(--brass); border-color: color-mix(in oklab, var(--brass) 30%, transparent); }
+.pill[data-state="overdue"] { color: var(--red); border-color: color-mix(in oklab, var(--red) 34%, transparent); }
+
+/* List layout */
+.grid.is-list { grid-template-columns: 1fr; gap: var(--s2); }
+.grid.is-list .card {
+  flex-direction: row; align-items: center; gap: var(--s4);
+  padding: var(--s3);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-md);
+  background: var(--glass-bg);
+}
+.grid.is-list .card:hover { border-color: var(--line-strong); }
+.grid.is-list .card__cover-wrap { width: 48px; flex: none; }
+.grid.is-list .cover { aspect-ratio: 2 / 3; border-radius: 2px 5px 5px 2px; }
+.grid.is-list .cover__body, .grid.is-list .cover__seal, .grid.is-list .ribbon { display: none; }
+.grid.is-list .cover__spine { width: 7px; }
+.grid.is-list .fav { top: -7px; left: -7px; width: 24px; height: 24px; opacity: 1; scale: 1; }
+.grid.is-list .fav .icon { width: 13px; height: 13px; }
+.grid.is-list .card__body {
+  flex: 1; display: grid; align-items: center;
+  column-gap: var(--s4); row-gap: 0;
+  grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr) auto;
+  grid-template-areas: "title progress foot" "author progress foot";
+}
+.grid.is-list .card__title { grid-area: title; align-self: end; -webkit-line-clamp: 1; }
+.grid.is-list .card__author { grid-area: author; align-self: start; }
+.grid.is-list .card__stars { display: none; }
+.grid.is-list .progress { grid-area: progress; }
+.grid.is-list .card__foot { grid-area: foot; }
+.grid.is-list .card:hover .cover { transform: none; }
+
+/* Empty state */
+.empty {
+  display: grid; justify-items: center; gap: var(--s3);
+  padding: var(--s8) var(--s4);
+  text-align: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+}
+.empty__mark {
+  display: grid; place-items: center;
+  width: 56px; height: 56px; border-radius: var(--r-md);
+  color: var(--text-3);
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+.empty__mark .icon { width: 26px; height: 26px; }
+.empty h3 { font-size: var(--step-1); }
+.empty p { color: var(--text-3); max-width: 42ch; }
+.empty .btn { margin-top: var(--s2); }
+
+/* ── 8. Ledger — the date-due slip ───────────────────────────────────────── */
+.ledger { display: grid; gap: var(--s3); }
+
+.slip {
+  position: relative;
+  display: grid;
+  grid-template-columns: 6px 1fr auto;
+  gap: 0 var(--s4);
+  align-items: center;
+  padding: var(--s4) var(--s5) var(--s4) var(--s4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--glass-brd);
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  overflow: hidden;
+  animation: rise .34s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 18ms);
+}
+/* punched holes, like a real slip glued to the endpaper */
+.slip::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  background: var(--spine, var(--accent));
+}
+.slip::after {
+  content: ""; position: absolute; right: 14px; top: 50%; translate: 0 -50%;
+  width: 78px; height: 78px; border-radius: 50%;
+  border: 1.5px dashed var(--line-strong);
+  opacity: .35; pointer-events: none;
+}
+
+.slip__main { grid-column: 2; min-width: 0; }
+.slip__kind {
+  font: 500 .62rem/1 var(--font-mono);
+  letter-spacing: .16em; text-transform: uppercase;
+  padding: .4em .55em; border-radius: 4px;
+  display: inline-block; margin-bottom: var(--s2);
+}
+.slip__kind[data-kind="borrow"] { color: var(--brass); background: color-mix(in oklab, var(--brass) 14%, transparent); }
+.slip__kind[data-kind="return"] { color: var(--jade); background: color-mix(in oklab, var(--jade) 14%, transparent); }
+
+.slip__title {
+  font-family: var(--font-display);
+  font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 28;
+  font-size: var(--step-1); font-weight: 600; letter-spacing: -.01em;
+}
+.slip__title button { text-align: left; color: inherit; }
+.slip__title button:hover { text-decoration: underline; text-underline-offset: 3px; }
+.slip__sub { font-size: var(--step--1); color: var(--text-3); margin-top: 2px; }
+.slip__sub b { color: var(--text-2); font-weight: 600; }
+
+.stamp {
+  grid-column: 3;
+  position: relative; z-index: 1;
+  display: grid; gap: 2px; justify-items: center;
+  padding: var(--s2) var(--s3);
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  color: var(--text-3);
+  rotate: -3deg;
+  font-family: var(--font-mono);
+  opacity: .85;
+}
+.stamp small { font-size: .55rem; letter-spacing: .18em; text-transform: uppercase; }
+.stamp b { font-size: .82rem; font-weight: 500; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.stamp[data-late="true"] { color: var(--red); }
+
+/* ── 9. Statistics panels ────────────────────────────────────────────────── */
+.panels { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.panel { padding: var(--s5); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.panel h3 { font-size: var(--step-0); margin-bottom: var(--s5); letter-spacing: -.005em; }
+
+.bars { display: grid; gap: var(--s3); }
+.bar__top { display: flex; justify-content: space-between; font-size: var(--step--1); margin-bottom: 5px; }
+.bar__top b { font-weight: 600; }
+.bar__top span { color: var(--text-3); font-family: var(--font-mono); font-size: .72rem; }
+.bar__track { height: 8px; border-radius: var(--r-full); background: color-mix(in oklab, var(--text) 9%, transparent); overflow: hidden; }
+.bar__fill {
+  height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--spine) 70%, #fff 12%), var(--spine));
+  width: 0; animation: grow .8s var(--ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+@keyframes grow { to { width: var(--w); } }
+
+.donut-row { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; }
+.donut { position: relative; width: 132px; height: 132px; flex: none; }
+.donut svg { width: 100%; height: 100%; rotate: -90deg; }
+.donut circle { fill: none; stroke-width: 13; stroke-linecap: butt; }
+.donut__track { stroke: color-mix(in oklab, var(--text) 10%, transparent); }
+.donut__seg { transition: stroke-dasharray .9s var(--ease-out), stroke-dashoffset .9s var(--ease-out); }
+.donut__seg--done { stroke: var(--jade); }
+.donut__seg--reading { stroke: var(--violet); }
+.donut__center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.donut__center strong { display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.donut__center span { font-size: .68rem; color: var(--text-3); }
+
+.legend { display: grid; gap: var(--s3); flex: 1; min-width: 140px; }
+.legend li { display: flex; align-items: center; gap: var(--s2); font-size: var(--step--1); color: var(--text-2); }
+.legend b { margin-left: auto; font-family: var(--font-mono); color: var(--text); font-weight: 500; }
+.dot { width: 9px; height: 9px; border-radius: 3px; background: var(--tint); }
+
+.kv { display: grid; gap: var(--s2); margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line); }
+.kv > div { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s3); font-size: var(--step--1); }
+.kv dt { color: var(--text-3); }
+.kv dd { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.kv--lg { margin-top: 0; padding-top: 0; border-top: 0; gap: var(--s4); }
+.kv--lg dd { font-size: var(--step-1); font-weight: 500; }
+
+.ranks { display: grid; gap: var(--s3); counter-reset: rank; }
+.ranks li { display: flex; align-items: center; gap: var(--s3); font-size: var(--step-0); }
+.ranks li::before {
+  counter-increment: rank; content: counter(rank, decimal-leading-zero);
+  font: 500 .7rem/1 var(--font-mono); color: var(--text-3);
+  width: 22px;
+}
+.ranks span { color: var(--text-3); margin-left: auto; font-family: var(--font-mono); font-size: .74rem; }
+
+/* ── 10. Dialogs ─────────────────────────────────────────────────────────── */
+.modal {
+  width: min(760px, calc(100vw - 2rem));
+  max-height: min(88dvh, 900px);
+  padding: 0; border: 0; background: none;
+  border-radius: var(--r-xl);
+  color: var(--text);
+  overflow: visible;
+}
+.modal--sm { width: min(460px, calc(100vw - 2rem)); }
+.modal--detail { width: min(880px, calc(100vw - 2rem)); }
+
+.modal::backdrop {
+  background: color-mix(in oklab, #05060a 62%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.modal[open] { animation: modalIn .34s var(--ease-out); }
+.modal[open]::backdrop { animation: fade .34s var(--ease-out); }
+.modal.is-closing { animation: modalOut .2s var(--ease) forwards; }
+.modal.is-closing::backdrop { animation: fade .2s var(--ease) reverse forwards; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { opacity: 0; translate: 0 18px; scale: .97; } to { opacity: 1; translate: 0; scale: 1; } }
+@keyframes modalOut { to { opacity: 0; translate: 0 8px; scale: .98; } }
+
+.modal__inner {
+  display: flex; flex-direction: column;
+  max-height: min(88dvh, 900px);
+  border-radius: var(--r-xl);
+  background: color-mix(in oklab, var(--surface) 86%, transparent);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.modal__head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4);
+  padding: var(--s5) var(--s5) var(--s4);
+}
+.modal__head .eyebrow { margin-bottom: var(--s2); }
+.modal__body { padding: 0 var(--s5) var(--s5); overflow-y: auto; }
+.modal__note { color: var(--text-2); margin-bottom: var(--s4); }
+.modal__foot {
+  display: flex; justify-content: flex-end; gap: var(--s2);
+  padding: var(--s4) var(--s5);
+  border-top: 1px solid var(--line);
+  background: color-mix(in oklab, var(--text) 3%, transparent);
+}
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); }
+
+.rating { display: flex; align-items: center; gap: var(--s1); }
+.rating__star { padding: 4px; color: var(--line-strong); border-radius: var(--r-sm); transition: color .15s var(--ease), scale .15s var(--ease-out); }
+.rating__star .icon { width: 22px; height: 22px; }
+.rating__star:hover { scale: 1.14; }
+.rating__star.is-on { color: var(--brass); }
+.rating__star.is-on .icon { fill: var(--brass); }
+.rating__clear { margin-left: var(--s3); font-size: var(--step--1); color: var(--text-3); }
+.rating__clear:hover { color: var(--text); text-decoration: underline; }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px; padding: 0;
+  border-radius: var(--r-full); border: 0;
+  background: linear-gradient(90deg, var(--accent) var(--fill, 0%), color-mix(in oklab, var(--text) 12%, transparent) var(--fill, 0%));
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--accent);
+  box-shadow: var(--shadow); cursor: grab;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--accent); cursor: grab;
+}
+output { font-family: var(--font-mono); color: var(--text); font-variant-numeric: tabular-nums; }
+
+.check { display: flex; align-items: center; gap: var(--s3); cursor: pointer; }
+.check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.check__box {
+  display: grid; place-items: center;
+  width: 22px; height: 22px; flex: none;
+  border: 1px solid var(--line-strong); border-radius: 6px;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.check__box .icon { width: 15px; height: 15px; stroke-width: 2.4; color: var(--accent-ink); scale: 0; transition: scale .2s var(--ease-out); }
+.check input:checked + .check__box { background: var(--accent); border-color: var(--accent); }
+.check input:checked + .check__box .icon { scale: 1; }
+.check input:focus-visible + .check__box { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.keys { display: grid; gap: var(--s3); }
+.keys > div { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); }
+.keys dt { display: flex; gap: 4px; }
+.keys dd { color: var(--text-2); font-size: var(--step--1); }
+
+/* Detail dialog interior */
+.detail { display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: var(--s6); padding: var(--s6); }
+.detail__cover { position: relative; }
+.detail__cover .cover { pointer-events: none; }
+.detail__meta { min-width: 0; }
+.detail__cat {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 .64rem/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: var(--s3);
+}
+.detail__cat::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--spine); }
+.detail h2 { font-family: var(--font-display); font-variation-settings: "SOFT" 40, "WONK" 1, "opsz" 60; font-size: var(--step-2); letter-spacing: -.02em; }
+.detail__author { color: var(--text-2); margin-top: var(--s1); }
+.detail__desc { color: var(--text-2); margin: var(--s4) 0; line-height: 1.65; }
+.detail__stars { color: var(--brass); letter-spacing: .12em; margin-top: var(--s3); }
+
+.facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: var(--s3); margin: var(--s5) 0;
+  padding: var(--s4) 0; border-block: 1px solid var(--line);
+}
+.facts div { display: grid; gap: 3px; }
+.facts dt { font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); font-family: var(--font-mono); }
+.facts dd { font-size: var(--step-0); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.detail__progress { margin: var(--s5) 0; display: grid; gap: var(--s2); }
+.detail__progress .row { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--step--1); color: var(--text-2); }
+
+.loan-card {
+  display: grid; gap: var(--s2);
+  padding: var(--s4); margin-bottom: var(--s5);
+  border-radius: var(--r-md);
+  border: 1px dashed color-mix(in oklab, var(--brass) 45%, transparent);
+  background: color-mix(in oklab, var(--brass) 8%, transparent);
+  font-size: var(--step--1);
+}
+.loan-card[data-late="true"] {
+  border-color: color-mix(in oklab, var(--red) 50%, transparent);
+  background: color-mix(in oklab, var(--red) 8%, transparent);
+}
+.loan-card .row { display: flex; align-items: center; gap: var(--s2); color: var(--text-2); }
+.loan-card b { color: var(--text); font-weight: 600; }
+.loan-card .icon { width: 16px; height: 16px; color: var(--brass); }
+.loan-card[data-late="true"] .icon { color: var(--red); }
+
+.detail__acts { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s5); }
+.detail__acts .btn--icon-only { width: 42px; padding: 0; }
+
+.timeline { margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line); }
+.timeline h3 { font-size: var(--step--1); text-transform: uppercase; letter-spacing: .12em; color: var(--text-3); font-family: var(--font-mono); font-weight: 500; margin-bottom: var(--s4); }
+.timeline ol { display: grid; gap: var(--s3); }
+.timeline li { display: grid; grid-template-columns: 12px 1fr auto; gap: var(--s3); align-items: center; font-size: var(--step--1); }
+.timeline li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--tint, var(--text-3)); }
+.timeline time { color: var(--text-3); font-family: var(--font-mono); font-size: .72rem; }
+.timeline p { color: var(--text-2); }
+.timeline b { color: var(--text); font-weight: 600; }
+
+/* ── 11. Toasts ──────────────────────────────────────────────────────────── */
+.toasts {
+  position: fixed; z-index: 60;
+  bottom: var(--s5); left: 50%; translate: -50% 0;
+  display: grid; gap: var(--s2); justify-items: center;
+  width: min(440px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: var(--s3);
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-full);
+  border: 1px solid var(--glass-brd);
+  background: color-mix(in oklab, var(--surface) 90%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--step--1);
+  pointer-events: auto;
+  animation: toastIn .34s var(--ease-out);
+}
+.toast.is-out { animation: toastOut .24s var(--ease) forwards; }
+@keyframes toastIn { from { opacity: 0; translate: 0 18px; scale: .96; } }
+@keyframes toastOut { to { opacity: 0; translate: 0 10px; scale: .97; } }
+.toast .icon { width: 18px; height: 18px; color: var(--jade); }
+.toast[data-tone="warn"] .icon { color: var(--brass); }
+.toast[data-tone="error"] .icon { color: var(--red); }
+.toast__undo { margin-left: auto; font-weight: 600; color: var(--accent); }
+.toast__undo:hover { text-decoration: underline; }
+
+/* ── 12. Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  :root { --rail-w: 232px; }
+  .detail { grid-template-columns: 190px minmax(0, 1fr); gap: var(--s5); }
+}
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .rail {
+    position: fixed; inset: 0 auto 0 0; z-index: 40;
+    width: min(288px, 84vw);
+    translate: -101% 0;
+    transition: translate var(--dur) var(--ease-out);
+    box-shadow: var(--shadow-lg);
+  }
+  .app.rail-open .rail { translate: 0; }
+  .app.rail-open::after {
+    content: ""; position: fixed; inset: 0; z-index: 30;
+    background: rgb(0 0 0 / .5); backdrop-filter: blur(2px);
+    animation: fade .24s var(--ease-out);
+  }
+  .rail-toggle { display: grid; }
+  .wrap { padding: var(--s5) var(--s4) var(--s8); }
+  .topbar { padding-inline: var(--s4); gap: var(--s2); }
+  .search__kbd { display: none; }
+  #addBtn span { display: none; }
+  #addBtn kbd { display: none; }
+  #addBtn { width: 42px; padding: 0; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s4); }
+  .detail { grid-template-columns: 1fr; padding: var(--s5); }
+  .detail__cover { width: 168px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .toolbar { gap: var(--s3); }
+  .toolbar__right { width: 100%; justify-content: space-between; }
+  .slip { grid-template-columns: 6px 1fr; }
+  .slip::after { display: none; }
+  .stamp { grid-column: 2; justify-self: start; margin-top: var(--s3); rotate: -2deg; }
+  .grid.is-list .card__body {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title foot" "author foot" "progress progress";
+    row-gap: var(--s2);
+  }
+}
+
+@media (max-width: 520px) {
+  .stats { grid-template-columns: repeat(2, 1fr); gap: var(--s3); }
+  .stat { padding: var(--s4); }
+  .stat__icon { width: 32px; height: 32px; margin-bottom: var(--s3); }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .card__acts { opacity: 1; }
+  .modal__foot { flex-direction: column-reverse; }
+  .modal__foot .btn { width: 100%; }
+  .toasts { bottom: var(--s3); }
+}
+
+/* ── 13. Motion & environment preferences ────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bar__fill { width: var(--w); }
+  .card:hover .cover { transform: none; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --glass-brd: currentColor; }
+  .glass, .card, .slip, .panel { backdrop-filter: none; }
+}
+
+@media print {
+  .rail, .topbar, .toolbar, .card__acts, .fav, .toasts, .empty .btn { display: none !important; }
+  body { overflow: visible; background: #fff; color: #000; }
+  .app { display: block; height: auto; }
+  .scroll { overflow: visible; }
+  .grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Shelf",
+  "applicationCategory": "Productivity",
+  "operatingSystem": "Any (web browser)",
+  "description": "A personal book library for cataloguing books, tracking reading progress and recording borrowing history.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to library</a>
+
+<!-- ─────────────────────────  ICON SPRITE  ───────────────────────── -->
+<svg width="0" height="0" aria-hidden="true" focusable="false" class="sprite">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-books" viewBox="0 0 24 24"><path d="M4 4h4v16H4zM10 4h4v16h-4zM16.5 4.7l3.4.9-3.8 14.4-3.4-.9z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></symbol>
+    <symbol id="i-out" viewBox="0 0 24 24"><path d="M21 3l-8 8M15 3h6v6"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M3 3v6h6"/><path d="M3.5 13a9 9 0 1 0 2.6-7.1L3 9"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.9"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16v-4M12 16V8M17 16v-7"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.4 3.6a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-rows" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21v-1.5a4.5 4.5 0 0 0-4.5-4.5h-7A4.5 4.5 0 0 0 4 19.5V21"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2h.01"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10.5l5 5 5-5M4 20h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V3M7 7.5l5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-keys" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M8 14h8"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ─────────────────────────  SIDEBAR  ───────────────────────── -->
+  <header class="rail glass" id="rail">
+    <a class="brand" href="#main">
+      <span class="brand__spines" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="brand__text">
+        <strong>Shelf</strong>
+        <small>Personal library</small>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Library sections">
+      <ul role="list">
+        <li><button class="nav__item is-active" data-view="library" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-books"/></svg><span>Library</span><span class="nav__count" data-count="library">0</span></button></li>
+        <li><button class="nav__item" data-view="favorites"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg><span>Favorites</span><span class="nav__count" data-count="favorites">0</span></button></li>
+        <li><button class="nav__item" data-view="borrowed"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg><span>On loan</span><span class="nav__count" data-count="borrowed">0</span></button></li>
+        <li><button class="nav__item" data-view="history"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg><span>History</span><span class="nav__count" data-count="history">0</span></button></li>
+        <li><button class="nav__item" data-view="stats"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg><span>Statistics</span></button></li>
+      </ul>
+    </nav>
+
+    <div class="rail__foot">
+      <button class="btn btn--ghost btn--full" id="exportBtn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span>Export library</span></button>
+      <button class="btn btn--ghost btn--full" id="importBtn"><svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg><span>Import file</span></button>
+      <input type="file" id="importInput" accept="application/json,.json" hidden>
+      <button class="btn btn--ghost btn--full" id="shortcutsBtn"><svg class="icon" aria-hidden="true"><use href="#i-keys"/></svg><span>Shortcuts</span><kbd>?</kbd></button>
+    </div>
+  </header>
+
+  <!-- ─────────────────────────  MAIN  ───────────────────────── -->
+  <main id="main" class="main">
+
+    <div class="topbar glass">
+      <button class="icon-btn rail-toggle" id="railToggle" aria-label="Open navigation" aria-expanded="false" aria-controls="rail">
+        <svg class="icon" aria-hidden="true"><use href="#i-rows"/></svg>
+      </button>
+
+      <form class="search" role="search" id="searchForm">
+        <label class="sr-only" for="searchInput">Search your library</label>
+        <svg class="icon search__icon" aria-hidden="true"><use href="#i-search"/></svg>
+        <input id="searchInput" type="search" placeholder="Search by title, author, category or ISBN" autocomplete="off" spellcheck="false" enterkeyhint="search">
+        <kbd class="search__kbd" aria-hidden="true">/</kbd>
+        <button type="button" class="search__clear" id="searchClear" aria-label="Clear search" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+        </button>
+      </form>
+
+      <div class="topbar__actions">
+        <button class="icon-btn" id="themeBtn" aria-label="Switch to light theme">
+          <svg class="icon icon--sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          <svg class="icon icon--moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        </button>
+        <button class="btn btn--primary" id="addBtn">
+          <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add book</span><kbd>N</kbd>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll" id="scroll">
+      <div class="wrap">
+
+        <!-- Page heading -->
+        <div class="page-head">
+          <p class="eyebrow" id="viewEyebrow">Dashboard</p>
+          <h1 class="display" id="viewTitle">Your library</h1>
+          <p class="lede" id="viewLede">Everything you own, on loan, or halfway through.</p>
+        </div>
+
+        <!-- Dashboard cards -->
+        <section class="stats" aria-label="Library overview">
+          <article class="stat glass" style="--tint:var(--violet)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-books"/></svg></span>
+            <p class="stat__num" data-stat="total">0</p>
+            <h2 class="stat__label">Total books</h2>
+            <p class="stat__meta" data-stat="totalMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--brass)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg></span>
+            <p class="stat__num" data-stat="borrowed">0</p>
+            <h2 class="stat__label">Borrowed</h2>
+            <p class="stat__meta" data-stat="borrowedMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--jade)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg></span>
+            <p class="stat__num" data-stat="available">0</p>
+            <h2 class="stat__label">On the shelf</h2>
+            <p class="stat__meta" data-stat="availableMeta">—</p>
+          </article>
+          <article class="stat glass" style="--tint:var(--rose)">
+            <span class="stat__icon"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></span>
+            <p class="stat__num" data-stat="categories">0</p>
+            <h2 class="stat__label">Categories</h2>
+            <p class="stat__meta" data-stat="categoriesMeta">—</p>
+          </article>
+        </section>
+
+        <!-- Recently added rail -->
+        <section class="recent" id="recent" aria-labelledby="recentTitle">
+          <div class="section-head">
+            <h2 id="recentTitle">Recently added</h2>
+            <p class="section-head__meta">The last five books to arrive</p>
+          </div>
+          <ul class="recent__list" id="recentList" role="list"></ul>
+        </section>
+
+        <!-- ── Collection view ── -->
+        <section class="collection" id="collectionView" aria-labelledby="collectionTitle">
+          <div class="section-head">
+            <h2 id="collectionTitle" class="sr-only">Books</h2>
+          </div>
+
+          <div class="toolbar">
+            <div class="chips" role="group" aria-label="Filter by category" id="chips"></div>
+
+            <div class="toolbar__right">
+              <div class="field field--inline">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter">
+                  <option value="all">All</option>
+                  <option value="available">On the shelf</option>
+                  <option value="borrowed">On loan</option>
+                  <option value="reading">Currently reading</option>
+                  <option value="finished">Finished</option>
+                  <option value="unread">Not started</option>
+                </select>
+              </div>
+
+              <div class="field field--inline">
+                <label for="sortSelect">Sort</label>
+                <select id="sortSelect">
+                  <option value="added-desc">Newest first</option>
+                  <option value="added-asc">Oldest first</option>
+                  <option value="title-asc">Title A–Z</option>
+                  <option value="title-desc">Title Z–A</option>
+                  <option value="author-asc">Author A–Z</option>
+                  <option value="year-desc">Year published</option>
+                  <option value="rating-desc">Highest rated</option>
+                  <option value="progress-desc">Most progress</option>
+                </select>
+              </div>
+
+              <div class="seg" role="group" aria-label="Layout">
+                <button class="seg__btn is-active" id="gridBtn" aria-pressed="true" aria-label="Grid layout"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg></button>
+                <button class="seg__btn" id="listBtn" aria-pressed="false" aria-label="List layout"><svg class="icon" aria-hidden="true"><use href="#i-rows"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <p class="result-line" id="resultLine" role="status" aria-live="polite"></p>
+
+          <ul class="grid" id="grid" role="list"></ul>
+
+          <div class="empty" id="empty" hidden>
+            <span class="empty__mark" aria-hidden="true"><svg class="icon"><use href="#i-book"/></svg></span>
+            <h3 id="emptyTitle">No books here yet</h3>
+            <p id="emptyText">Add your first book and it will show up on this shelf.</p>
+            <button class="btn btn--primary" data-action="add-first"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg><span>Add a book</span></button>
+          </div>
+        </section>
+
+        <!-- ── History view ── -->
+        <section class="history" id="historyView" hidden aria-labelledby="historyTitle">
+          <div class="section-head">
+            <h2 id="historyTitle">Borrowing history</h2>
+            <p class="section-head__meta">Every loan and return, newest first</p>
+          </div>
+
+          <div class="toolbar toolbar--slim">
+            <div class="field field--inline">
+              <label for="historyFilter">Show</label>
+              <select id="historyFilter">
+                <option value="all">All activity</option>
+                <option value="borrow">Loans only</option>
+                <option value="return">Returns only</option>
+              </select>
+            </div>
+            <button class="btn btn--ghost" id="clearHistoryBtn"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>Clear history</span></button>
+          </div>
+
+          <ol class="ledger" id="ledger" role="list"></ol>
+
+          <div class="empty" id="historyEmpty" hidden>
+            <span class="empty__mark" aria-hidden="true"><svg class="icon"><use href="#i-clock"/></svg></span>
+            <h3>Nothing has been lent yet</h3>
+            <p>When you lend a book, the loan and its return will be stamped here.</p>
+          </div>
+        </section>
+
+        <!-- ── Statistics view ── -->
+        <section class="statsview" id="statsView" hidden aria-labelledby="statsTitle">
+          <div class="section-head">
+            <h2 id="statsTitle">Statistics</h2>
+            <p class="section-head__meta">How the collection breaks down</p>
+          </div>
+
+          <div class="panels">
+            <article class="panel glass">
+              <h3>Books per category</h3>
+              <ul class="bars" id="catBars" role="list"></ul>
+            </article>
+
+            <article class="panel glass">
+              <h3>Reading progress</h3>
+              <div class="donut-row">
+                <div class="donut" id="donut" role="img" aria-labelledby="donutDesc">
+                  <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="donut__track" cx="60" cy="60" r="52"/>
+                    <circle class="donut__seg donut__seg--done" cx="60" cy="60" r="52"/>
+                    <circle class="donut__seg donut__seg--reading" cx="60" cy="60" r="52"/>
+                  </svg>
+                  <p class="donut__center"><strong data-stat="finishedPct">0%</strong><span>finished</span></p>
+                </div>
+                <ul class="legend" id="legend" role="list">
+                  <li><span class="dot" style="--tint:var(--jade)"></span>Finished<b data-stat="finished">0</b></li>
+                  <li><span class="dot" style="--tint:var(--violet)"></span>In progress<b data-stat="reading">0</b></li>
+                  <li><span class="dot" style="--tint:var(--line-strong)"></span>Not started<b data-stat="unread">0</b></li>
+                </ul>
+              </div>
+              <p id="donutDesc" class="sr-only">Doughnut chart of finished, in-progress and unread books.</p>
+              <dl class="kv">
+                <div><dt>Pages read</dt><dd data-stat="pagesRead">0</dd></div>
+                <div><dt>Pages owned</dt><dd data-stat="pagesTotal">0</dd></div>
+                <div><dt>Average rating</dt><dd data-stat="avgRating">—</dd></div>
+              </dl>
+            </article>
+
+            <article class="panel glass">
+              <h3>Most shelved authors</h3>
+              <ol class="ranks" id="authorRanks" role="list"></ol>
+            </article>
+
+            <article class="panel glass">
+              <h3>Lending</h3>
+              <dl class="kv kv--lg">
+                <div><dt>Total loans</dt><dd data-stat="loans">0</dd></div>
+                <div><dt>Currently out</dt><dd data-stat="out">0</dd></div>
+                <div><dt>Overdue</dt><dd data-stat="overdue">0</dd></div>
+                <div><dt>Most trusted borrower</dt><dd data-stat="topBorrower">—</dd></div>
+              </dl>
+            </article>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ─────────────────────────  DETAILS DIALOG  ───────────────────────── -->
+<dialog class="modal modal--detail" id="detailModal" aria-labelledby="detailTitle">
+  <div class="modal__inner glass" id="detailBody"></div>
+</dialog>
+
+<!-- ─────────────────────────  BOOK FORM DIALOG  ───────────────────────── -->
+<dialog class="modal" id="formModal" aria-labelledby="formTitle">
+  <form class="modal__inner glass" id="bookForm" novalidate>
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow" id="formEyebrow">Catalogue</p>
+        <h2 id="formTitle" class="display display--sm">Add a book</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+
+    <div class="modal__body form-grid">
+      <div class="field field--span">
+        <label for="f-title">Title <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-title" name="title" required maxlength="120" autocomplete="off" aria-describedby="e-title">
+        <p class="err" id="e-title" hidden>Give the book a title.</p>
+      </div>
+
+      <div class="field field--span">
+        <label for="f-author">Author <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-author" name="author" required maxlength="80" autocomplete="off" aria-describedby="e-author">
+        <p class="err" id="e-author" hidden>Who wrote it?</p>
+      </div>
+
+      <div class="field">
+        <label for="f-category">Category</label>
+        <input id="f-category" name="category" list="categoryList" maxlength="40" autocomplete="off" placeholder="Fiction">
+        <datalist id="categoryList"></datalist>
+      </div>
+
+      <div class="field">
+        <label for="f-year">Year published</label>
+        <input id="f-year" name="year" type="number" min="1" max="2100" inputmode="numeric" aria-describedby="e-year">
+        <p class="err" id="e-year" hidden>Use a year between 1 and 2100.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-pages">Pages</label>
+        <input id="f-pages" name="pages" type="number" min="1" max="20000" inputmode="numeric" aria-describedby="e-pages">
+        <p class="err" id="e-pages" hidden>Pages must be a positive number.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-isbn">ISBN</label>
+        <input id="f-isbn" name="isbn" maxlength="20" autocomplete="off" placeholder="978-…" class="mono">
+      </div>
+
+      <div class="field field--span">
+        <label for="f-desc">Description</label>
+        <textarea id="f-desc" name="description" rows="3" maxlength="600" placeholder="A sentence or two you'll thank yourself for later."></textarea>
+      </div>
+
+      <div class="field field--span">
+        <span class="label" id="ratingLabel">Rating</span>
+        <div class="rating" role="radiogroup" aria-labelledby="ratingLabel" id="ratingInput">
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="1" aria-label="1 star"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="2" aria-label="2 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="3" aria-label="3 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="4" aria-label="4 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__star" role="radio" aria-checked="false" data-value="5" aria-label="5 stars"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg></button>
+          <button type="button" class="rating__clear" id="ratingClear">Clear</button>
+        </div>
+      </div>
+
+      <div class="field field--span">
+        <label for="f-progress">Reading progress — <output id="progressOut" for="f-progress">0%</output></label>
+        <input id="f-progress" name="progress" type="range" min="0" max="100" step="1" value="0">
+      </div>
+
+      <div class="field field--span">
+        <label class="check">
+          <input type="checkbox" id="f-fav" name="favorite">
+          <span class="check__box" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+          <span>Mark as a favorite</span>
+        </label>
+      </div>
+    </div>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn--primary" id="formSubmit"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span>Save book</span></button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ─────────────────────────  BORROW DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="borrowModal" aria-labelledby="borrowTitle">
+  <form class="modal__inner glass" id="borrowForm" novalidate>
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">Lend</p>
+        <h2 id="borrowTitle" class="display display--sm">Lend this book</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+
+    <div class="modal__body">
+      <p class="modal__note" id="borrowBook"></p>
+
+      <div class="field">
+        <label for="f-borrower">Lent to <span class="req" aria-hidden="true">*</span></label>
+        <input id="f-borrower" name="borrower" required maxlength="60" autocomplete="off" list="borrowerList" placeholder="Name of the borrower" aria-describedby="e-borrower">
+        <datalist id="borrowerList"></datalist>
+        <p class="err" id="e-borrower" hidden>Enter who is taking the book.</p>
+      </div>
+
+      <div class="field">
+        <label for="f-due">Due back</label>
+        <input id="f-due" name="due" type="date" class="mono">
+      </div>
+    </div>
+
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Cancel</button>
+      <button type="submit" class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-out"/></svg><span>Lend book</span></button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ─────────────────────────  CONFIRM DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="confirmModal" aria-labelledby="confirmTitle">
+  <div class="modal__inner glass">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow" id="confirmEyebrow">Confirm</p>
+        <h2 id="confirmTitle" class="display display--sm">Are you sure?</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="modal__body"><p class="modal__note" id="confirmText"></p></div>
+    <footer class="modal__foot">
+      <button type="button" class="btn btn--ghost" data-close>Keep it</button>
+      <button type="button" class="btn btn--danger" id="confirmOk"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>Delete</span></button>
+    </footer>
+  </div>
+</dialog>
+
+<!-- ─────────────────────────  SHORTCUTS DIALOG  ───────────────────────── -->
+<dialog class="modal modal--sm" id="keysModal" aria-labelledby="keysTitle">
+  <div class="modal__inner glass">
+    <header class="modal__head">
+      <div>
+        <p class="eyebrow">Keyboard</p>
+        <h2 id="keysTitle" class="display display--sm">Shortcuts</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="modal__body">
+      <dl class="keys">
+        <div><dt><kbd>/</kbd></dt><dd>Focus search</dd></div>
+        <div><dt><kbd>N</kbd></dt><dd>Add a book</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>L</kbd></dt><dd>Go to library</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>F</kbd></dt><dd>Go to favorites</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>B</kbd></dt><dd>Go to books on loan</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>H</kbd></dt><dd>Go to history</dd></div>
+        <div><dt><kbd>G</kbd> <kbd>S</kbd></dt><dd>Go to statistics</dd></div>
+        <div><dt><kbd>T</kbd></dt><dd>Toggle theme</dd></div>
+        <div><dt><kbd>Esc</kbd></dt><dd>Close dialog or clear search</dd></div>
+        <div><dt><kbd>?</kbd></dt><dd>Open this list</dd></div>
+      </dl>
+    </div>
+  </div>
+</dialog>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<template id="cardTpl">
+  <li class="card" role="listitem">
+    <div class="card__cover-wrap">
+      <button class="cover" data-act="open" type="button">
+        <span class="cover__spine" aria-hidden="true"></span>
+        <span class="cover__body">
+          <span class="cover__cat"></span>
+          <span class="cover__title"></span>
+          <span class="cover__rule" aria-hidden="true"></span>
+          <span class="cover__author"></span>
+        </span>
+        <span class="cover__seal" aria-hidden="true"></span>
+      </button>
+      <button class="fav" data-act="fav" type="button" aria-pressed="false">
+        <svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg>
+      </button>
+      <span class="ribbon" hidden></span>
+    </div>
+
+    <div class="card__body">
+      <h3 class="card__title"></h3>
+      <p class="card__author"></p>
+      <p class="card__stars" aria-hidden="true"></p>
+
+      <div class="progress">
+        <div class="progress__track"><div class="progress__fill"></div></div>
+        <span class="progress__label mono"></span>
+      </div>
+
+      <div class="card__foot">
+        <span class="pill"></span>
+        <div class="card__acts">
+          <button class="icon-btn icon-btn--sm" data-act="loan" type="button"></button>
+          <button class="icon-btn icon-btn--sm" data-act="edit" type="button" aria-label="Edit"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg></button>
+          <button class="icon-btn icon-btn--sm icon-btn--danger" data-act="del" type="button" aria-label="Delete"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </li>
+</template>
+
+<script>
+/* ============================================================================
+   SHELF — Personal Book Library
+   script.js · Vanilla JavaScript, no dependencies.
+
+   Architecture
+   ------------
+   Store    → versioned localStorage persistence (books + history + prefs)
+   State    → the single source of truth; nothing else holds data
+   Derive   → pure functions: filter → search → sort → stats
+   Render   → declarative painters, each reading only from State
+   Actions  → the only place State is mutated; every action calls render()
+   UI       → dialogs, toasts, keyboard, theme
+
+   Data flows one way: action → mutate state → persist → render.
+   ========================================================================= */
+(() => {
+  'use strict';
+
+  /* ── Utilities ─────────────────────────────────────────────────────────── */
+  const $  = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+  const uid = () => 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+  const esc = (v = '') => String(v).replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+
+  const nf = new Intl.NumberFormat();
+  const num = n => nf.format(n);
+
+  const dateFmt = new Intl.DateTimeFormat(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+  const fmtDate = iso => (iso ? dateFmt.format(new Date(iso)) : '—');
+  const stampFmt = iso => (iso ? new Date(iso).toISOString().slice(0, 10).replace(/-/g, ' · ') : '— — —');
+
+  const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const daysUntil = iso => Math.round((new Date(iso) - startOfToday()) / 864e5);
+  const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+
+  const debounce = (fn, ms = 140) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+  const plural = (n, one, many) => `${num(n)} ${n === 1 ? one : many}`;
+
+  /** Deterministic hue from any string — keeps a category's colour stable forever. */
+  const hash = str => {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+    return Math.abs(h);
+  };
+  const catHue = cat => hash((cat || 'uncategorised').toLowerCase()) % 360;
+  const spineOf = book => {
+    const drift = (hash(book.title || '') % 17) - 8;
+    return `hsl(${(catHue(book.category) + drift + 360) % 360} 44% 50%)`;
+  };
+  const chipColor = cat => `hsl(${catHue(cat)} 44% 52%)`;
+
+  const stars = r => (r ? '★'.repeat(r) + '☆'.repeat(5 - r) : '');
+
+  /** Reading status derived from progress — never stored twice. */
+  const readState = b => (b.progress >= 100 ? 'finished' : b.progress > 0 ? 'reading' : 'unread');
+  const isOverdue = b => b.status === 'borrowed' && b.dueAt && daysUntil(b.dueAt) < 0;
+
+  const highlight = (text, q) => {
+    const safe = esc(text);
+    if (!q) return safe;
+    const needle = esc(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(needle, 'ig'), m => `<mark>${m}</mark>`);
+  };
+
+  /* ── Store ─────────────────────────────────────────────────────────────── */
+  const KEY = 'shelf.v1';
+
+  const SEED = [
+    ['The Left Hand of Darkness', 'Ursula K. Le Guin', 'Science Fiction', 1969, 304, '978-0-441-47812-5', 'An envoy arrives on a world whose people have no fixed gender, and discovers that politics is the coldest weather of all.', 5, 100, true],
+    ['A Pattern Language', 'Christopher Alexander', 'Architecture', 1977, 1171, '978-0-19-501919-3', '253 patterns for building rooms, streets and towns that people actually want to be in.', 5, 42, true],
+    ['The Overstory', 'Richard Powers', 'Fiction', 2018, 502, '978-0-393-63552-2', 'Nine strangers, each summoned in a different way by trees, converge on the last stand of virgin forest.', 4, 68, false],
+    ['Thinking, Fast and Slow', 'Daniel Kahneman', 'Psychology', 2011, 499, '978-0-374-53355-7', 'Two systems drive the way we think: one quick and intuitive, one slow and deliberate. Neither is trustworthy alone.', 4, 100, false],
+    ['The Design of Everyday Things', 'Don Norman', 'Design', 1988, 368, '978-0-465-05065-9', 'Why doors confuse us, and what that says about every object built without regard for the person using it.', 5, 100, true],
+    ['Piranesi', 'Susanna Clarke', 'Fiction', 2020, 245, '978-1-63557-563-4', 'A man lives in an infinite house of statues and tides, keeping careful notes. The notes are not entirely his.', 5, 100, false],
+    ['Sapiens', 'Yuval Noah Harari', 'History', 2011, 443, '978-0-06-231609-7', 'How an unremarkable ape came to tell stories convincing enough to organise millions of strangers.', 3, 24, false],
+    ['The Soul of a New Machine', 'Tracy Kidder', 'Technology', 1981, 293, '978-0-316-49197-6', 'A year inside the crunch, as one engineering team builds a minicomputer against an impossible deadline.', 5, 0, false],
+    ['Braiding Sweetgrass', 'Robin Wall Kimmerer', 'Nature', 2013, 391, '978-1-57131-335-5', 'A botanist reads the land twice — once through science, once through the language of gift and reciprocity.', 5, 55, true],
+    ['Ways of Seeing', 'John Berger', 'Art', 1972, 166, '978-0-14-103579-6', 'Seven essays that pull the frame off the painting and ask who was allowed to look, and who was looked at.', 4, 100, false],
+    ['The Beginning of Infinity', 'David Deutsch', 'Science', 2011, 487, '978-0-14-311969-8', 'Good explanations are hard to vary — and that single idea reaches from physics to art to the future of everything.', 4, 12, false],
+    ['Norwegian Wood', 'Haruki Murakami', 'Fiction', 1987, 296, '978-0-375-70402-7', 'A student in 1960s Tokyo is caught between a girl bound to the dead and a girl impatient to live.', 4, 0, false],
+  ].map(([title, author, category, year, pages, isbn, description, rating, progress, favorite], i) => ({
+    id: 'seed' + i, title, author, category, year, pages, isbn, description, rating, progress, favorite,
+    status: 'available', borrower: null, borrowedAt: null, dueAt: null,
+    addedAt: new Date(Date.now() - (i + 1) * 36e5 * 29).toISOString(),
+  }));
+
+  const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
+
+  /** Builds the first-run demo shelf: two live loans, one of them overdue. */
+  const seedState = () => {
+    const books = structuredClone(SEED);
+    const history = [];
+
+    const lend = (i, borrower, lentAgo, dueIn) => {
+      const b = books[i];
+      const date = daysAgo(lentAgo);
+      const due = daysAgo(-dueIn);
+      Object.assign(b, { status: 'borrowed', borrower, borrowedAt: date, dueAt: due });
+      history.push({ id: uid(), bookId: b.id, type: 'borrow', borrower, date, due });
+    };
+
+    // A loan that already came home
+    const piranesi = books[5];
+    history.push({ id: uid(), bookId: piranesi.id, type: 'borrow', borrower: 'Mira Haddad', date: daysAgo(26), due: daysAgo(12) });
+    history.push({ id: uid(), bookId: piranesi.id, type: 'return', borrower: 'Mira Haddad', date: daysAgo(9), due: daysAgo(12) });
+
+    lend(6, 'Tomás Vela', 9, 5);      // due next week
+    lend(9, 'Inés Okafor', 27, -6);   // six days overdue
+    return { books, history };
+  };
+
+  const Store = {
+    read() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!Array.isArray(data.books)) return null;
+        return data;
+      } catch { return null; }
+    },
+    write(state) {
+      try {
+        localStorage.setItem(KEY, JSON.stringify({
+          version: 1, books: state.books, history: state.history,
+          prefs: { theme: state.theme, layout: state.layout, sort: state.sort },
+        }));
+      } catch {
+        toast('Storage is full — recent changes may not be saved.', 'error');
+      }
+    },
+  };
+
+  /* ── State ─────────────────────────────────────────────────────────────── */
+  const saved = Store.read();
+  const seed = saved ? null : seedState();
+
+  const state = {
+    books: saved?.books ?? seed.books,
+    history: saved?.history ?? seed.history,
+    theme: saved?.prefs?.theme ?? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'),
+    layout: saved?.prefs?.layout ?? 'grid',
+    sort: saved?.prefs?.sort ?? 'added-desc',
+    view: 'library',
+    query: '',
+    category: 'all',
+    status: 'all',
+    historyFilter: 'all',
+    editingId: null,
+    lendingId: null,
+    pendingDelete: null,
+  };
+
+  const persist = () => Store.write(state);
+  const byId = id => state.books.find(b => b.id === id);
+
+  /* ── Derive (pure) ─────────────────────────────────────────────────────── */
+  const SORTERS = {
+    'added-desc':    (a, b) => new Date(b.addedAt) - new Date(a.addedAt),
+    'added-asc':     (a, b) => new Date(a.addedAt) - new Date(b.addedAt),
+    'title-asc':     (a, b) => a.title.localeCompare(b.title),
+    'title-desc':    (a, b) => b.title.localeCompare(a.title),
+    'author-asc':    (a, b) => a.author.localeCompare(b.author),
+    'year-desc':     (a, b) => (b.year || 0) - (a.year || 0),
+    'rating-desc':   (a, b) => (b.rating || 0) - (a.rating || 0),
+    'progress-desc': (a, b) => b.progress - a.progress,
+  };
+
+  const matchesStatus = (b, status) => {
+    if (status === 'all') return true;
+    if (status === 'available' || status === 'borrowed') return b.status === status;
+    return readState(b) === status;
+  };
+
+  const matchesQuery = (b, q) => {
+    if (!q) return true;
+    const hay = `${b.title} ${b.author} ${b.category} ${b.isbn || ''}`.toLowerCase();
+    return hay.includes(q);
+  };
+
+  /** The visible collection for the current view + filters. */
+  const visibleBooks = () => {
+    const q = state.query.trim().toLowerCase();
+    return state.books
+      .filter(b => (state.view === 'favorites' ? b.favorite : true))
+      .filter(b => (state.view === 'borrowed' ? b.status === 'borrowed' : true))
+      .filter(b => state.category === 'all' || b.category === state.category)
+      .filter(b => matchesStatus(b, state.status))
+      .filter(b => matchesQuery(b, q))
+      .sort(SORTERS[state.sort] ?? SORTERS['added-desc']);
+  };
+
+  const categories = () => [...new Set(state.books.map(b => b.category).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  const metrics = () => {
+    const bs = state.books;
+    const borrowed = bs.filter(b => b.status === 'borrowed');
+    const finished = bs.filter(b => readState(b) === 'finished');
+    const reading = bs.filter(b => readState(b) === 'reading');
+    const rated = bs.filter(b => b.rating);
+    return {
+      total: bs.length,
+      borrowed: borrowed.length,
+      available: bs.length - borrowed.length,
+      overdue: bs.filter(isOverdue).length,
+      categories: categories().length,
+      favorites: bs.filter(b => b.favorite).length,
+      finished: finished.length,
+      reading: reading.length,
+      unread: bs.length - finished.length - reading.length,
+      pagesTotal: bs.reduce((n, b) => n + (b.pages || 0), 0),
+      pagesRead: Math.round(bs.reduce((n, b) => n + ((b.pages || 0) * b.progress) / 100, 0)),
+      avgRating: rated.length ? (rated.reduce((n, b) => n + b.rating, 0) / rated.length).toFixed(1) : null,
+      loans: state.history.filter(h => h.type === 'borrow').length,
+    };
+  };
+
+  /* ── Elements ──────────────────────────────────────────────────────────── */
+  const el = {
+    app: $('.app'),
+    grid: $('#grid'),
+    chips: $('#chips'),
+    recent: $('#recent'),
+    recentList: $('#recentList'),
+    empty: $('#empty'),
+    emptyTitle: $('#emptyTitle'),
+    emptyText: $('#emptyText'),
+    resultLine: $('#resultLine'),
+    collection: $('#collectionView'),
+    historyView: $('#historyView'),
+    statsView: $('#statsView'),
+    ledger: $('#ledger'),
+    historyEmpty: $('#historyEmpty'),
+    searchInput: $('#searchInput'),
+    searchClear: $('#searchClear'),
+    viewTitle: $('#viewTitle'),
+    viewEyebrow: $('#viewEyebrow'),
+    viewLede: $('#viewLede'),
+    toasts: $('#toasts'),
+    cardTpl: $('#cardTpl'),
+  };
+
+  const TEXTS = {
+    library:   ['Dashboard', 'Your library', 'Everything you own, on loan, or halfway through.'],
+    favorites: ['Collection', 'Favorites', 'The books you would rescue from a fire.'],
+    borrowed:  ['Lending', 'Out on loan', 'Who has what, and when you should ask for it back.'],
+    history:   ['Records', 'Borrowing history', 'A stamped record of every loan and return.'],
+    stats:     ['Insight', 'Statistics', 'What the shelf says about how you read.'],
+  };
+
+  /* ── Render ────────────────────────────────────────────────────────────── */
+  function render() {
+    if (state.category !== 'all' && !state.books.some(b => b.category === state.category)) state.category = 'all';
+    renderChrome();
+    renderStats();
+    renderNavCounts();
+    if (state.view === 'history') renderLedger();
+    else if (state.view === 'stats') renderStatsView();
+    else { renderChips(); renderRecent(); renderGrid(); }
+    persist();
+  }
+
+  function renderChrome() {
+    const [eyebrow, title, lede] = TEXTS[state.view];
+    el.viewEyebrow.textContent = eyebrow;
+    el.viewTitle.textContent = title;
+    el.viewLede.textContent = lede;
+
+    const isCollection = ['library', 'favorites', 'borrowed'].includes(state.view);
+    el.collection.hidden = !isCollection;
+    el.historyView.hidden = state.view !== 'history';
+    el.statsView.hidden = state.view !== 'stats';
+    el.recent.hidden = state.view !== 'library' || state.books.length < 3;
+
+    $$('.nav__item').forEach(btn => {
+      const on = btn.dataset.view === state.view;
+      btn.classList.toggle('is-active', on);
+      if (on) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
+    });
+
+    el.searchClear.hidden = !state.query;
+  }
+
+  function renderNavCounts() {
+    const m = metrics();
+    const counts = { library: m.total, favorites: m.favorites, borrowed: m.borrowed, history: state.history.length };
+    $$('[data-count]').forEach(n => { n.textContent = num(counts[n.dataset.count] ?? 0); });
+  }
+
+  function renderStats() {
+    const m = metrics();
+    const set = (k, v) => { const n = $(`[data-stat="${k}"]`); if (n) n.textContent = v; };
+
+    set('total', num(m.total));
+    set('totalMeta', m.total ? `${plural(m.pagesTotal, 'page', 'pages')} on the shelf` : 'Nothing catalogued yet');
+    set('borrowed', num(m.borrowed));
+    set('borrowedMeta', m.overdue ? `${plural(m.overdue, 'book is', 'books are')} overdue` : m.borrowed ? 'All within their due dates' : 'Nothing is out');
+    set('available', num(m.available));
+    set('availableMeta', m.reading ? `${plural(m.reading, 'book', 'books')} in progress` : 'Ready when you are');
+    set('categories', num(m.categories));
+    set('categoriesMeta', m.favorites ? `${plural(m.favorites, 'favorite', 'favorites')} marked` : 'No favorites yet');
+  }
+
+  function renderChips() {
+    const counts = new Map();
+    state.books.forEach(b => counts.set(b.category, (counts.get(b.category) || 0) + 1));
+
+    const items = [['all', state.books.length], ...categories().map(c => [c, counts.get(c) || 0])];
+    el.chips.innerHTML = items.map(([cat, n]) => {
+      const on = state.category === cat;
+      const label = cat === 'all' ? 'All categories' : cat;
+      const color = cat === 'all' ? 'var(--accent)' : chipColor(cat);
+      return `<button class="chip" type="button" data-cat="${esc(cat)}" aria-pressed="${on}"
+                style="--spine:${color}">${esc(label)} <span class="chip__n">${num(n)}</span></button>`;
+    }).join('');
+  }
+
+  function renderRecent() {
+    if (el.recent.hidden) return;
+    const recent = [...state.books].sort(SORTERS['added-desc']).slice(0, 5);
+    el.recentList.innerHTML = recent.map(b => `
+      <li>
+        <button class="recent__item" type="button" data-open="${b.id}" style="--spine:${spineOf(b)}">
+          <span class="recent__chip" aria-hidden="true"></span>
+          <span class="recent__meta">
+            <strong>${esc(b.title)}</strong>
+            <span>${esc(b.author)} · added ${esc(fmtDate(b.addedAt))}</span>
+          </span>
+        </button>
+      </li>`).join('');
+  }
+
+  function renderGrid() {
+    const books = visibleBooks();
+    const q = state.query.trim();
+
+    el.grid.classList.toggle('is-list', state.layout === 'list');
+    el.grid.replaceChildren(...books.map((b, i) => card(b, q, i)));
+
+    el.grid.hidden = books.length === 0;
+    el.empty.hidden = books.length !== 0;
+
+    if (!books.length) {
+      const filtered = q || state.category !== 'all' || state.status !== 'all';
+      el.emptyTitle.textContent = filtered ? 'No books match those filters'
+        : state.view === 'favorites' ? 'No favorites yet'
+        : state.view === 'borrowed' ? 'Nothing is out on loan'
+        : 'Your shelf is empty';
+      el.emptyText.textContent = filtered ? 'Try a different category, or clear the search.'
+        : state.view === 'favorites' ? 'Tap the heart on any cover and it will appear here.'
+        : state.view === 'borrowed' ? 'Lend a book and it will be tracked here until it comes home.'
+        : 'Add your first book and it will show up on this shelf.';
+      $('[data-action="add-first"]').hidden = state.view !== 'library' && !filtered;
+    }
+
+    el.resultLine.textContent = books.length
+      ? `${plural(books.length, 'book', 'books')}${q ? ` matching “${q}”` : ''}`
+      : '';
+  }
+
+  function card(b, q, i) {
+    const node = el.cardTpl.content.firstElementChild.cloneNode(true);
+    const overdue = isOverdue(b);
+    const out = b.status === 'borrowed';
+
+    node.dataset.id = b.id;
+    node.style.setProperty('--i', i);
+    node.style.setProperty('--spine', spineOf(b));
+
+    const open = $('[data-act="open"]', node);
+    open.setAttribute('aria-label', `Open details for ${b.title} by ${b.author}`);
+    $('.cover__cat', node).textContent = b.category || 'Uncategorised';
+    $('.cover__title', node).textContent = b.title;
+    $('.cover__author', node).textContent = b.author;
+
+    const fav = $('[data-act="fav"]', node);
+    fav.setAttribute('aria-pressed', String(!!b.favorite));
+    fav.setAttribute('aria-label', b.favorite ? `Remove ${b.title} from favorites` : `Add ${b.title} to favorites`);
+
+    const ribbon = $('.ribbon', node);
+    if (out) {
+      ribbon.hidden = false;
+      ribbon.dataset.kind = overdue ? 'late' : 'loan';
+      ribbon.textContent = overdue ? 'Overdue' : 'On loan';
+    }
+
+    $('.card__title', node).innerHTML = highlight(b.title, q);
+    $('.card__author', node).innerHTML = highlight(b.author, q);
+    $('.card__stars', node).textContent = stars(b.rating);
+
+    $('.progress__fill', node).style.width = `${b.progress}%`;
+    $('.progress__label', node).textContent = `${b.progress}%`;
+    $('.progress', node).setAttribute('title', `${b.progress}% read`);
+
+    const pill = $('.pill', node);
+    pill.dataset.state = overdue ? 'overdue' : b.status;
+    pill.textContent = overdue ? `${Math.abs(daysUntil(b.dueAt))}d late` : out ? b.borrower.split(' ')[0] : 'Shelved';
+
+    const loan = $('[data-act="loan"]', node);
+    loan.setAttribute('aria-label', out ? `Mark ${b.title} returned` : `Lend ${b.title}`);
+    loan.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#${out ? 'i-back' : 'i-out'}"/></svg>`;
+
+    $('[data-act="edit"]', node).setAttribute('aria-label', `Edit ${b.title}`);
+    $('[data-act="del"]', node).setAttribute('aria-label', `Delete ${b.title}`);
+    return node;
+  }
+
+  function renderLedger() {
+    const entries = state.history
+      .filter(h => state.historyFilter === 'all' || h.type === state.historyFilter)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    el.ledger.hidden = !entries.length;
+    el.historyEmpty.hidden = !!entries.length;
+
+    el.ledger.innerHTML = entries.map((h, i) => {
+      const b = byId(h.bookId);
+      const title = b ? b.title : 'A removed book';
+      const spine = b ? spineOf(b) : 'var(--line-strong)';
+      const late = h.type === 'return' && h.due && new Date(h.date) > new Date(h.due);
+      const verb = h.type === 'borrow' ? 'Lent to' : 'Returned by';
+      const due = h.type === 'borrow' && h.due ? ` · due ${esc(fmtDate(h.due))}` : '';
+      return `
+        <li class="slip" style="--spine:${spine}; --i:${i}">
+          <div class="slip__main">
+            <span class="slip__kind" data-kind="${h.type}">${h.type === 'borrow' ? 'Loan' : 'Return'}</span>
+            <p class="slip__title">${b ? `<button type="button" data-open="${b.id}">${esc(title)}</button>` : esc(title)}</p>
+            <p class="slip__sub">${verb} <b>${esc(h.borrower)}</b>${due}${late ? ' · returned late' : ''}</p>
+          </div>
+          <div class="stamp" data-late="${late}">
+            <small>${h.type === 'borrow' ? 'Date issued' : 'Date returned'}</small>
+            <b>${esc(stampFmt(h.date))}</b>
+          </div>
+        </li>`;
+    }).join('');
+  }
+
+  function renderStatsView() {
+    const m = metrics();
+    const set = (k, v) => { const n = $(`[data-stat="${k}"]`); if (n) n.textContent = v; };
+
+    // Category bars
+    const counts = new Map();
+    state.books.forEach(b => counts.set(b.category || 'Uncategorised', (counts.get(b.category || 'Uncategorised') || 0) + 1));
+    const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+    const max = sorted[0]?.[1] || 1;
+    $('#catBars').innerHTML = sorted.length ? sorted.map(([cat, n], i) => `
+      <li class="bar" style="--spine:${chipColor(cat)}">
+        <p class="bar__top"><b>${esc(cat)}</b><span>${num(n)}</span></p>
+        <div class="bar__track" role="img" aria-label="${esc(cat)}: ${num(n)} books">
+          <div class="bar__fill" style="--w:${(n / max) * 100}%; --i:${i}"></div>
+        </div>
+      </li>`).join('') : '<li class="bar"><p class="bar__top">Nothing to chart yet</p></li>';
+
+    // Donut
+    const C = 2 * Math.PI * 52;
+    const total = m.total || 1;
+    const fDone = m.finished / total;
+    const fRead = m.reading / total;
+    const done = $('.donut__seg--done');
+    const reading = $('.donut__seg--reading');
+    done.style.strokeDasharray = `${fDone * C} ${C}`;
+    done.style.strokeDashoffset = '0';
+    reading.style.strokeDasharray = `${fRead * C} ${C}`;
+    reading.style.strokeDashoffset = `${-fDone * C}`;
+
+    set('finishedPct', `${Math.round(fDone * 100)}%`);
+    set('finished', num(m.finished));
+    set('reading', num(m.reading));
+    set('unread', num(m.unread));
+    set('pagesRead', num(m.pagesRead));
+    set('pagesTotal', num(m.pagesTotal));
+    set('avgRating', m.avgRating ? `${m.avgRating} ★` : '—');
+
+    // Authors
+    const authors = new Map();
+    state.books.forEach(b => authors.set(b.author, (authors.get(b.author) || 0) + 1));
+    const top = [...authors.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5);
+    $('#authorRanks').innerHTML = top.length
+      ? top.map(([a, n]) => `<li>${esc(a)}<span>${plural(n, 'book', 'books')}</span></li>`).join('')
+      : '<li>No authors yet</li>';
+
+    // Lending
+    const borrowers = new Map();
+    state.history.filter(h => h.type === 'borrow').forEach(h => borrowers.set(h.borrower, (borrowers.get(h.borrower) || 0) + 1));
+    const topBorrower = [...borrowers.entries()].sort((a, b) => b[1] - a[1])[0];
+    set('loans', num(m.loans));
+    set('out', num(m.borrowed));
+    set('overdue', num(m.overdue));
+    set('topBorrower', topBorrower ? topBorrower[0] : '—');
+  }
+
+  /* ── Dialog controller (one for all modals) ────────────────────────────── */
+  const Dialog = {
+    open(dlg, focusSel) {
+      if (!dlg.open) dlg.showModal();          // re-opening an open dialog throws
+      const target = focusSel ? $(focusSel, dlg) : $('input, select, textarea, button:not([data-close])', dlg);
+      target?.focus({ preventScroll: true });
+    },
+    close(dlg) {
+      if (!dlg.open || dlg.classList.contains('is-closing')) return;
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return dlg.close();
+      dlg.classList.add('is-closing');
+      dlg.addEventListener('animationend', function done(e) {
+        if (e.target !== dlg) return;          // ignore animations from descendants
+        dlg.removeEventListener('animationend', done);
+        dlg.classList.remove('is-closing');
+        dlg.close();
+      });
+    },
+  };
+
+  $$('dialog').forEach(dlg => {
+    dlg.addEventListener('cancel', e => { e.preventDefault(); Dialog.close(dlg); });
+    dlg.addEventListener('click', e => {
+      if (e.target.closest('[data-close]')) Dialog.close(dlg);
+      else if (e.target === dlg) Dialog.close(dlg);   // click on the backdrop area
+    });
+  });
+
+  /* ── Toasts ────────────────────────────────────────────────────────────── */
+  let toastTimer;
+  function toast(message, tone = 'ok', undo) {
+    const node = document.createElement('div');
+    node.className = 'toast';
+    node.dataset.tone = tone;
+    const icon = tone === 'error' ? 'i-alert' : tone === 'warn' ? 'i-clock' : 'i-check';
+    node.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#${icon}"/></svg><span>${esc(message)}</span>`;
+
+    if (undo) {
+      const btn = document.createElement('button');
+      btn.className = 'toast__undo';
+      btn.type = 'button';
+      btn.textContent = 'Undo';
+      btn.addEventListener('click', () => { undo(); dismiss(node); });
+      node.append(btn);
+    }
+
+    el.toasts.append(node);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => dismiss(node), undo ? 7000 : 3600);
+  }
+  function dismiss(node) {
+    if (!node.isConnected) return;
+    node.classList.add('is-out');
+    node.addEventListener('animationend', () => node.remove(), { once: true });
+    setTimeout(() => node.remove(), 400);
+  }
+
+  /* ── Actions ───────────────────────────────────────────────────────────── */
+  function setView(view) {
+    if (!TEXTS[view]) return;
+    state.view = view;
+    el.app.classList.remove('rail-open');
+    $('#railToggle').setAttribute('aria-expanded', 'false');
+    $('#scroll').scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    render();
+    el.viewTitle.setAttribute('tabindex', '-1');
+    el.viewTitle.focus({ preventScroll: true });
+  }
+
+  function toggleFav(id) {
+    const b = byId(id);
+    if (!b) return;
+    b.favorite = !b.favorite;
+    render();
+    toast(b.favorite ? `“${b.title}” added to favorites` : `“${b.title}” removed from favorites`);
+  }
+
+  function deleteBook(id) {
+    const index = state.books.findIndex(b => b.id === id);
+    if (index < 0) return;
+    const [removed] = state.books.splice(index, 1);
+    render();
+    toast(`“${removed.title}” deleted`, 'warn', () => {
+      state.books.splice(index, 0, removed);
+      render();
+      toast(`“${removed.title}” restored`);
+    });
+  }
+
+  function returnBook(id) {
+    const b = byId(id);
+    if (!b || b.status !== 'borrowed') return;
+    const late = isOverdue(b);
+    state.history.push({
+      id: uid(), bookId: b.id, type: 'return',
+      borrower: b.borrower, date: new Date().toISOString(), due: b.dueAt,
+    });
+    const who = b.borrower;
+    b.status = 'available'; b.borrower = null; b.borrowedAt = null; b.dueAt = null;
+    render();
+    toast(`“${b.title}” returned by ${who}${late ? ' — late' : ''}`, late ? 'warn' : 'ok');
+  }
+
+  /* ── Book form (add / edit) ────────────────────────────────────────────── */
+  const form = $('#bookForm');
+  const ratingInput = $('#ratingInput');
+  let rating = 0;
+
+  function paintRating() {
+    $$('.rating__star', ratingInput).forEach(s => {
+      const on = Number(s.dataset.value) <= rating;
+      s.classList.toggle('is-on', on);
+      s.setAttribute('aria-checked', String(Number(s.dataset.value) === rating));
+      s.tabIndex = Number(s.dataset.value) === (rating || 1) ? 0 : -1;
+    });
+  }
+
+  function openForm(id) {
+    state.editingId = id ?? null;
+    const b = id ? byId(id) : null;
+
+    $('#formTitle').textContent = b ? 'Edit book' : 'Add a book';
+    $('#formEyebrow').textContent = b ? 'Catalogue · edit' : 'Catalogue';
+    $('#formSubmit').querySelector('span').textContent = b ? 'Save changes' : 'Add to library';
+
+    form.reset();
+    $$('.err', form).forEach(e => { e.hidden = true; });
+    $$('input, textarea', form).forEach(i => i.removeAttribute('aria-invalid'));
+
+    $('#f-title').value = b?.title ?? '';
+    $('#f-author').value = b?.author ?? '';
+    $('#f-category').value = b?.category ?? '';
+    $('#f-year').value = b?.year ?? '';
+    $('#f-pages').value = b?.pages ?? '';
+    $('#f-isbn').value = b?.isbn ?? '';
+    $('#f-desc').value = b?.description ?? '';
+    $('#f-fav').checked = !!b?.favorite;
+    $('#f-progress').value = b?.progress ?? 0;
+    syncRange($('#f-progress'));
+    rating = b?.rating ?? 0;
+    paintRating();
+
+    $('#categoryList').innerHTML = categories().map(c => `<option value="${esc(c)}">`).join('');
+    Dialog.open($('#formModal'), '#f-title');
+  }
+
+  function validate() {
+    let ok = true;
+    const rules = [
+      ['#f-title', '#e-title', v => v.trim().length > 0],
+      ['#f-author', '#e-author', v => v.trim().length > 0],
+      ['#f-year', '#e-year', v => v === '' || (Number(v) >= 1 && Number(v) <= 2100)],
+      ['#f-pages', '#e-pages', v => v === '' || Number(v) >= 1],
+    ];
+    for (const [inputSel, errSel, test] of rules) {
+      const input = $(inputSel), err = $(errSel);
+      const valid = test(input.value);
+      err.hidden = valid;
+      input.setAttribute('aria-invalid', String(!valid));
+      if (!valid && ok) { input.focus(); ok = false; }
+    }
+    return ok;
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const data = {
+      title: $('#f-title').value.trim(),
+      author: $('#f-author').value.trim(),
+      category: $('#f-category').value.trim() || 'Uncategorised',
+      year: $('#f-year').value ? Number($('#f-year').value) : null,
+      pages: $('#f-pages').value ? Number($('#f-pages').value) : null,
+      isbn: $('#f-isbn').value.trim() || null,
+      description: $('#f-desc').value.trim(),
+      progress: Number($('#f-progress').value),
+      favorite: $('#f-fav').checked,
+      rating,
+    };
+
+    if (state.editingId) {
+      Object.assign(byId(state.editingId), data);
+      toast(`“${data.title}” updated`);
+    } else {
+      state.books.unshift({
+        id: uid(), ...data,
+        status: 'available', borrower: null, borrowedAt: null, dueAt: null,
+        addedAt: new Date().toISOString(),
+      });
+      toast(`“${data.title}” added to your library`);
+    }
+    state.editingId = null;
+    Dialog.close($('#formModal'));
+    render();
+  });
+
+  // Rating: click + roving-tabindex arrow keys (WAI-ARIA radiogroup pattern)
+  ratingInput.addEventListener('click', e => {
+    const star = e.target.closest('.rating__star');
+    if (!star) return;
+    rating = Number(star.dataset.value);
+    paintRating();
+  });
+  $('#ratingClear').addEventListener('click', () => { rating = 0; paintRating(); });
+  ratingInput.addEventListener('keydown', e => {
+    if (!e.target.closest('.rating__star')) return;
+    const dir = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+    if (!dir) return;
+    e.preventDefault();
+    rating = Math.min(5, Math.max(1, (rating || 0) + dir));
+    paintRating();
+    $(`.rating__star[data-value="${rating}"]`, ratingInput).focus();
+  });
+
+  const syncRange = input => {
+    input.style.setProperty('--fill', `${input.value}%`);
+    const out = $('#progressOut');
+    if (out && input.id === 'f-progress') out.textContent = `${input.value}%`;
+  };
+  $('#f-progress').addEventListener('input', e => syncRange(e.target));
+
+  /* ── Borrow flow ───────────────────────────────────────────────────────── */
+  const borrowForm = $('#borrowForm');
+
+  function openBorrow(id) {
+    const b = byId(id);
+    if (!b) return;
+    state.lendingId = id;
+    $('#borrowBook').innerHTML = `<b>${esc(b.title)}</b> by ${esc(b.author)}`;
+    borrowForm.reset();
+    $('#e-borrower').hidden = true;
+    $('#f-borrower').removeAttribute('aria-invalid');
+    $('#f-due').value = addDays(14);
+    $('#borrowerList').innerHTML = [...new Set(state.history.map(h => h.borrower))]
+      .map(n => `<option value="${esc(n)}">`).join('');
+    Dialog.open($('#borrowModal'), '#f-borrower');
+  }
+
+  borrowForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const nameInput = $('#f-borrower');
+    const name = nameInput.value.trim();
+    if (!name) {
+      $('#e-borrower').hidden = false;
+      nameInput.setAttribute('aria-invalid', 'true');
+      nameInput.focus();
+      return;
+    }
+    const b = byId(state.lendingId);
+    if (!b) return;
+
+    const due = $('#f-due').value ? new Date($('#f-due').value).toISOString() : null;
+    b.status = 'borrowed';
+    b.borrower = name;
+    b.borrowedAt = new Date().toISOString();
+    b.dueAt = due;
+    state.history.push({ id: uid(), bookId: b.id, type: 'borrow', borrower: name, date: b.borrowedAt, due });
+
+    Dialog.close($('#borrowModal'));
+    render();
+    toast(`“${b.title}” lent to ${name}${due ? `, due ${fmtDate(due)}` : ''}`);
+  });
+
+  /* ── Confirm dialog ────────────────────────────────────────────────────── */
+  let confirmAction = null;
+  function confirmThen({ title, text, cta = 'Delete', action }) {
+    $('#confirmTitle').textContent = title;
+    $('#confirmText').textContent = text;
+    $('#confirmOk').querySelector('span').textContent = cta;
+    confirmAction = action;
+    Dialog.open($('#confirmModal'), '.modal__foot [data-close]');   // focus the safe choice
+  }
+  $('#confirmOk').addEventListener('click', () => {
+    Dialog.close($('#confirmModal'));
+    confirmAction?.();
+    confirmAction = null;
+  });
+
+  /* ── Detail dialog ─────────────────────────────────────────────────────── */
+  function openDetail(id) {
+    const b = byId(id);
+    if (!b) return;
+    const out = b.status === 'borrowed';
+    const late = isOverdue(b);
+    const dlg = $('#detailModal');
+
+    const timeline = state.history
+      .filter(h => h.bookId === b.id)
+      .sort((a, x) => new Date(x.date) - new Date(a.date))
+      .map(h => `
+        <li style="--tint:${h.type === 'borrow' ? 'var(--brass)' : 'var(--jade)'}">
+          <p>${h.type === 'borrow' ? 'Lent to' : 'Returned by'} <b>${esc(h.borrower)}</b></p>
+          <time datetime="${esc(h.date)}">${esc(fmtDate(h.date))}</time>
+        </li>`).join('');
+
+    const loanCard = out ? `
+      <div class="loan-card" data-late="${late}">
+        <p class="row"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>Lent to <b>${esc(b.borrower)}</b> on ${esc(fmtDate(b.borrowedAt))}</p>
+        <p class="row"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>${
+          b.dueAt
+            ? late
+              ? `Overdue by <b>${plural(Math.abs(daysUntil(b.dueAt)), 'day', 'days')}</b>`
+              : `Due back in <b>${plural(Math.max(daysUntil(b.dueAt), 0), 'day', 'days')}</b> — ${esc(fmtDate(b.dueAt))}`
+            : 'No due date set'
+        }</p>
+      </div>` : '';
+
+    $('#detailBody').innerHTML = `
+      <div class="detail" style="--spine:${spineOf(b)}">
+        <div class="detail__cover">
+          <span class="cover">
+            <span class="cover__spine" aria-hidden="true"></span>
+            <span class="cover__body">
+              <span class="cover__cat">${esc(b.category)}</span>
+              <span class="cover__title">${esc(b.title)}</span>
+              <span class="cover__rule" aria-hidden="true"></span>
+              <span class="cover__author">${esc(b.author)}</span>
+            </span>
+            <span class="cover__seal" aria-hidden="true"></span>
+          </span>
+        </div>
+
+        <div class="detail__meta">
+          <div class="modal__head" style="padding:0 0 var(--s3)">
+            <div>
+              <p class="detail__cat">${esc(b.category)}</p>
+              <h2 id="detailTitle">${esc(b.title)}</h2>
+              <p class="detail__author">${esc(b.author)}${b.year ? ` · ${b.year}` : ''}</p>
+              ${b.rating ? `<p class="detail__stars" aria-label="Rated ${b.rating} out of 5">${stars(b.rating)}</p>` : ''}
+            </div>
+            <button type="button" class="icon-btn" data-close aria-label="Close dialog"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+
+          ${b.description ? `<p class="detail__desc">${esc(b.description)}</p>` : ''}
+
+          <dl class="facts">
+            <div><dt>Status</dt><dd>${late ? 'Overdue' : out ? 'On loan' : 'Shelved'}</dd></div>
+            <div><dt>Pages</dt><dd>${b.pages ? num(b.pages) : '—'}</dd></div>
+            <div><dt>Published</dt><dd>${b.year || '—'}</dd></div>
+            <div><dt>Added</dt><dd>${esc(fmtDate(b.addedAt))}</dd></div>
+            <div><dt>ISBN</dt><dd class="mono" style="font-size:.78rem">${esc(b.isbn || '—')}</dd></div>
+          </dl>
+
+          ${loanCard}
+
+          <div class="detail__progress">
+            <div class="row">
+              <label for="d-progress">Reading progress</label>
+              <output id="d-out" class="mono">${b.progress}% · ${b.pages ? `${num(Math.round(b.pages * b.progress / 100))} of ${num(b.pages)} pages` : readState(b)}</output>
+            </div>
+            <input id="d-progress" type="range" min="0" max="100" step="1" value="${b.progress}" style="--fill:${b.progress}%" aria-describedby="d-out">
+          </div>
+
+          <div class="detail__acts">
+            <button class="btn ${out ? 'btn--primary' : 'btn--primary'}" data-detail="loan">
+              <svg class="icon" aria-hidden="true"><use href="#${out ? 'i-back' : 'i-out'}"/></svg>
+              <span>${out ? 'Mark returned' : 'Lend book'}</span>
+            </button>
+            <button class="btn btn--ghost" data-detail="fav" aria-pressed="${!!b.favorite}">
+              <svg class="icon" aria-hidden="true" ${b.favorite ? 'style="fill:var(--rose);color:var(--rose)"' : ''}><use href="#i-heart"/></svg>
+              <span>${b.favorite ? 'Favorited' : 'Add to favorites'}</span>
+            </button>
+            <button class="btn btn--ghost" data-detail="edit"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg><span>Edit</span></button>
+            <button class="btn btn--ghost" data-detail="del"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg><span>Delete</span></button>
+          </div>
+
+          ${timeline ? `<div class="timeline"><h3>Borrowing history</h3><ol role="list">${timeline}</ol></div>` : ''}
+        </div>
+      </div>`;
+
+    dlg.dataset.id = b.id;
+    Dialog.open(dlg, '[data-detail="loan"]');
+  }
+
+  $('#detailBody').addEventListener('input', e => {
+    if (e.target.id !== 'd-progress') return;
+    const b = byId($('#detailModal').dataset.id);
+    if (!b) return;
+    b.progress = Number(e.target.value);
+    e.target.style.setProperty('--fill', `${b.progress}%`);
+    $('#d-out').textContent = `${b.progress}% · ${b.pages ? `${num(Math.round(b.pages * b.progress / 100))} of ${num(b.pages)} pages` : readState(b)}`;
+    debouncedRender();
+  });
+  const debouncedRender = debounce(render, 220);
+
+  $('#detailBody').addEventListener('click', e => {
+    const btn = e.target.closest('[data-detail]');
+    if (!btn) return;
+    const id = $('#detailModal').dataset.id;
+    const b = byId(id);
+    if (!b) return;
+
+    switch (btn.dataset.detail) {
+      case 'loan':
+        Dialog.close($('#detailModal'));
+        b.status === 'borrowed' ? returnBook(id) : setTimeout(() => openBorrow(id), 180);
+        break;
+      case 'fav':
+        toggleFav(id);
+        openDetail(id);
+        break;
+      case 'edit':
+        Dialog.close($('#detailModal'));
+        setTimeout(() => openForm(id), 180);
+        break;
+      case 'del':
+        Dialog.close($('#detailModal'));
+        setTimeout(() => askDelete(id), 180);
+        break;
+    }
+  });
+
+  function askDelete(id) {
+    const b = byId(id);
+    if (!b) return;
+    confirmThen({
+      title: 'Delete this book?',
+      text: `“${b.title}” will be removed from your library. You can undo this straight away.`,
+      cta: 'Delete book',
+      action: () => deleteBook(id),
+    });
+  }
+
+  /* ── Grid & list events (delegated) ────────────────────────────────────── */
+  el.grid.addEventListener('click', e => {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    const id = btn.closest('.card').dataset.id;
+    const b = byId(id);
+    if (!b) return;
+
+    switch (btn.dataset.act) {
+      case 'open': openDetail(id); break;
+      case 'fav': toggleFav(id); break;
+      case 'edit': openForm(id); break;
+      case 'del': askDelete(id); break;
+      case 'loan': b.status === 'borrowed' ? returnBook(id) : openBorrow(id); break;
+    }
+  });
+
+  document.addEventListener('click', e => {
+    const opener = e.target.closest('[data-open]');
+    if (opener) openDetail(opener.dataset.open);
+  });
+
+  el.chips.addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    state.category = chip.dataset.cat;
+    render();
+  });
+
+  $('[data-action="add-first"]').addEventListener('click', () => openForm());
+
+  /* ── Toolbar ───────────────────────────────────────────────────────────── */
+  $('#statusFilter').addEventListener('change', e => { state.status = e.target.value; render(); });
+  $('#sortSelect').addEventListener('change', e => { state.sort = e.target.value; render(); });
+  $('#historyFilter').addEventListener('change', e => { state.historyFilter = e.target.value; render(); });
+
+  const setLayout = layout => {
+    state.layout = layout;
+    $('#gridBtn').classList.toggle('is-active', layout === 'grid');
+    $('#listBtn').classList.toggle('is-active', layout === 'list');
+    $('#gridBtn').setAttribute('aria-pressed', String(layout === 'grid'));
+    $('#listBtn').setAttribute('aria-pressed', String(layout === 'list'));
+    render();
+  };
+  $('#gridBtn').addEventListener('click', () => setLayout('grid'));
+  $('#listBtn').addEventListener('click', () => setLayout('list'));
+
+  $('#clearHistoryBtn').addEventListener('click', () => {
+    if (!state.history.length) return toast('There is no history to clear.', 'warn');
+    confirmThen({
+      title: 'Clear the whole history?',
+      text: 'Every loan and return record will be erased. Books currently on loan stay on loan.',
+      cta: 'Clear history',
+      action: () => { state.history = []; render(); toast('Borrowing history cleared', 'warn'); },
+    });
+  });
+
+  /* ── Search ────────────────────────────────────────────────────────────── */
+  $('#searchForm').addEventListener('submit', e => e.preventDefault());
+  el.searchInput.addEventListener('input', debounce(e => {
+    state.query = e.target.value;
+    if (state.view === 'history' || state.view === 'stats') state.view = 'library';
+    render();
+  }, 120));
+  el.searchClear.addEventListener('click', () => {
+    el.searchInput.value = '';
+    state.query = '';
+    render();
+    el.searchInput.focus();
+  });
+
+  /* ── Navigation & rail ─────────────────────────────────────────────────── */
+  $$('.nav__item').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+
+  $('#railToggle').addEventListener('click', () => {
+    const open = el.app.classList.toggle('rail-open');
+    $('#railToggle').setAttribute('aria-expanded', String(open));
+    if (open) $('.nav__item').focus();
+  });
+  el.app.addEventListener('click', e => {
+    if (el.app.classList.contains('rail-open') && !e.target.closest('.rail') && !e.target.closest('#railToggle')) {
+      el.app.classList.remove('rail-open');
+      $('#railToggle').setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* ── Theme ─────────────────────────────────────────────────────────────── */
+  const applyTheme = () => {
+    document.documentElement.dataset.theme = state.theme;
+    $('#themeBtn').setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+  const toggleTheme = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); persist(); };
+  $('#themeBtn').addEventListener('click', toggleTheme);
+
+  /* ── Import / export ───────────────────────────────────────────────────── */
+  $('#exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify({ version: 1, books: state.books, history: state.history }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `shelf-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast(`Exported ${plural(state.books.length, 'book', 'books')}`);
+  });
+
+  $('#importBtn').addEventListener('click', () => $('#importInput').click());
+  $('#importInput').addEventListener('change', async e => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const data = JSON.parse(await file.text());
+      if (!Array.isArray(data.books)) throw new Error('shape');
+      const existing = new Set(state.books.map(b => b.id));
+      const incoming = data.books.filter(b => b.title && b.author).map(b => ({
+        ...b, id: existing.has(b.id) ? uid() : (b.id || uid()),
+        progress: Number(b.progress) || 0,
+        status: b.status === 'borrowed' ? 'borrowed' : 'available',
+        addedAt: b.addedAt || new Date().toISOString(),
+      }));
+      state.books.push(...incoming);
+      if (Array.isArray(data.history)) state.history.push(...data.history.filter(h => h.bookId && h.type));
+      render();
+      toast(`Imported ${plural(incoming.length, 'book', 'books')}`);
+    } catch {
+      toast("That file isn't a Shelf export.", 'error');
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  $('#shortcutsBtn').addEventListener('click', () => Dialog.open($('#keysModal')));
+  $('#addBtn').addEventListener('click', () => openForm());
+
+  /* ── Keyboard ──────────────────────────────────────────────────────────── */
+  const VIEW_KEYS = { l: 'library', f: 'favorites', b: 'borrowed', h: 'history', s: 'stats' };
+  let awaitingGo = false;
+
+  document.addEventListener('keydown', e => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    const inDialog = !!e.target.closest('dialog');
+
+    if (e.key === 'Escape' && typing && e.target === el.searchInput) {
+      el.searchInput.value = ''; state.query = ''; render(); return;
+    }
+    if (typing || inDialog || e.metaKey || e.ctrlKey || e.altKey) return;
+
+    if (awaitingGo) {
+      awaitingGo = false;
+      const view = VIEW_KEYS[e.key.toLowerCase()];
+      if (view) { e.preventDefault(); setView(view); return; }
+    }
+
+    switch (e.key.toLowerCase()) {
+      case '/': e.preventDefault(); el.searchInput.focus(); break;
+      case 'n': e.preventDefault(); openForm(); break;
+      case 't': toggleTheme(); break;
+      case 'g': awaitingGo = true; setTimeout(() => { awaitingGo = false; }, 1200); break;
+      case '?': Dialog.open($('#keysModal')); break;
+    }
+  });
+
+  /* ── Boot ──────────────────────────────────────────────────────────────── */
+  applyTheme();
+  $('#sortSelect').value = state.sort;
+  setLayout(state.layout);   // calls render()
+})();
+
+</script>
+</body>
+</html>
